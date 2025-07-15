@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 25: Largest Rectangle in Histogram - NeetCode 150</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; text-align: center; color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .controls { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2); flex-wrap: wrap; gap: 15px; }
+        .problem-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .difficulty-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; background: #f44336; color: white; }
+        .category-badge { background: rgba(255, 255, 255, 0.2); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .leetcode-link, .video-link { color: white; text-decoration: none; padding: 5px 10px; background: rgba(255, 255, 255, 0.2); border-radius: 6px; font-size: 12px; transition: all 0.3s ease; }
+        .video-link { background: rgba(255, 0, 0, 0.3); }
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; font-size: 14px; }
+        .btn-primary { background: #2196F3; color: white; } .btn-success { background: #4CAF50; color: white; } .btn-warning { background: #FF9800; color: white; } .btn-info { background: #17a2b8; color: white; } .btn-secondary { background: #6c757d; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .container { display: flex; height: calc(100vh - 140px); gap: 1px; }
+        .column { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); overflow: hidden; display: flex; flex-direction: column; }
+        .column.problem-column { flex: 1; } .column.editor-column { flex: 1; } .column.solution-column { flex: 1; transition: all 0.3s ease; }
+        .column.solution-column.collapsed { flex: 0; min-width: 0; opacity: 0; overflow: hidden; }
+        .column-header { background: rgba(0, 0, 0, 0.1); padding: 15px 20px; font-weight: bold; font-size: 16px; color: #333; border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .column-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .problem-statement { line-height: 1.6; color: #333; }
+        .problem-statement h3 { color: #2196F3; margin-bottom: 15px; font-size: 1.3em; }
+        .problem-statement p { margin-bottom: 15px; }
+        .example { background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .constraints { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .companies-section { background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #9c27b0; }
+        .companies-section h4 { color: #7b1fa2; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .company-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .company-tag { background: linear-gradient(135deg, #9c27b0, #673ab7); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .company-count { background: rgba(255, 255, 255, 0.3); padding: 2px 6px; border-radius: 10px; font-size: 10px; }
+        .video-section { background: linear-gradient(135deg, #ffebee, #fce4ec); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #e91e63; }
+        .video-section h4 { color: #c2185b; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .video-button { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #ff1744, #d50000); color: white; padding: 12px 20px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        #editor { height: 100%; border: none; }
+        .solution-content { font-family: 'Courier New', monospace; background: #f8f9fa; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .solution-content pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .approach-section { background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .complexity-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #2196F3; }
+        .complexity-info h4 { color: #1976d2; margin-bottom: 10px; }
+        .navigation { background: rgba(255, 255, 255, 0.1); padding: 10px 20px; text-align: center; }
+        .nav-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .hint-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .hint-overlay.show { display: flex; }
+        .hint-modal { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 20px; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative; }
+        .hint-modal h3 { font-size: 1.8em; margin-bottom: 20px; text-align: center; }
+        .hint-content { line-height: 1.6; }
+        .hint-content .key-insight { background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #fff; }
+        .hint-close { position: absolute; top: 15px; right: 20px; background: rgba(255, 255, 255, 0.2); border: none; color: white; font-size: 24px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; }
+        @media (max-width: 1200px) { .container { flex-direction: column; height: auto; } .column { min-height: 400px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Problem 25: Largest Rectangle in Histogram</h1>
+        <p>NeetCode 150 - Interactive Java Solution with Video & Company Data</p>
+    </div>
+    <div class="controls">
+        <div class="problem-info">
+            <span class="difficulty-badge">Hard</span>
+            <span class="category-badge">Stack</span>
+            <a href="https://leetcode.com/problems/largest-rectangle-in-histogram/" target="_blank" class="leetcode-link">🔗 LeetCode 84</a>
+            <a href="https://www.youtube.com/watch?v=zx5Sw9130L0" target="_blank" class="video-link">📺 Video Solution</a>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="runCode()">▶️ Run Code</button>
+            <button class="btn btn-info" onclick="toggleHint()">💭 Get Hint</button>
+            <button class="btn btn-success" onclick="loadSolution()">📥 Load Solution</button>
+            <button class="btn btn-warning" onclick="resetCode()">🔄 Reset</button>
+            <button class="btn btn-secondary" onclick="toggleSolution()" id="toggleBtn">👁️ View Solution</button>
+        </div>
+    </div>
+    <div class="hint-overlay" id="hintOverlay" onclick="closeHintIfClickedOutside(event)">
+        <div class="hint-modal" onclick="event.stopPropagation()">
+            <button class="hint-close" onclick="toggleHint()">×</button>
+            <div style="font-size: 3em; text-align: center; margin-bottom: 20px;">💡</div>
+            <h3>💭 Hint: Largest Rectangle in Histogram</h3>
+            <div class="hint-content">
+                <div class="key-insight">
+                    <p><strong>🔑 Key Insight:</strong> Use monotonic increasing stack. When current height < stack top, pop and calculate area using popped height as minimum height.</p>
+                </div>
+                <p><strong>🤔 Think about:</strong> For each bar, what's the largest rectangle that can be formed with that bar as the shortest?</p>
+                <p><strong>⚡ Time Complexity:</strong> O(n) - Each element pushed and popped at most once</p>
+            </div>
+            <div style="text-align: center; margin-top: 25px;">
+                <button onclick="toggleHint()" style="background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">Got it! Let me try 🚀</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="column problem-column">
+            <div class="column-header">📋 Problem Statement</div>
+            <div class="column-content">
+                <div class="problem-statement">
+                    <h3>Largest Rectangle in Histogram</h3>
+                    <p><strong>Problem:</strong> Given an array of integers <code>heights</code> representing the histogram's bar height where the width of each bar is <code>1</code>, return <em>the area of the largest rectangle in the histogram</em>.</p>
+                    <div class="example">
+                        <strong>Example 1:</strong><br>
+                        Input: heights = [2,1,5,6,2,3]<br>
+                        Output: 10<br>
+                        Explanation: The above is a histogram where width of each bar is 1. The largest rectangle is shown in the red area, which has an area = 10 units.
+                    </div>
+                    <div class="example">
+                        <strong>Example 2:</strong><br>
+                        Input: heights = [2,4]<br>
+                        Output: 4
+                    </div>
+                    <div class="constraints">
+                        <strong>Constraints:</strong><br>
+                        • 1 ≤ heights.length ≤ 10⁵<br>
+                        • 0 ≤ heights[i] ≤ 10⁴
+                    </div>
+                    <div class="video-section">
+                        <h4>📺 Video Explanation</h4>
+                        <p>Watch NeetCode's detailed explanation:</p>
+                        <a href="https://www.youtube.com/watch?v=zx5Sw9130L0" target="_blank" class="video-button">🎥 Watch Video Solution</a>
+                    </div>
+                    <div class="companies-section">
+                        <h4>🏢 Asked by Companies</h4>
+                        <div class="company-tags">
+                            <div class="company-tag">Amazon <span class="company-count">20</span></div>
+                            <div class="company-tag">Google <span class="company-count">18</span></div>
+                            <div class="company-tag">Microsoft <span class="company-count">15</span></div>
+                            <div class="company-tag">Facebook <span class="company-count">12</span></div>
+                            <div class="company-tag">Apple <span class="company-count">10</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column editor-column">
+            <div class="column-header">💻 Code Editor</div>
+            <div class="column-content" style="padding: 0;"><div id="editor"></div></div>
+        </div>
+        <div class="column solution-column collapsed" id="solutionColumn">
+            <div class="column-header">✅ Java Solution</div>
+            <div class="column-content">
+                <div class="solution-content">
+                    <div class="approach-section">
+                        <h4>💡 Approach</h4>
+                        <p>Monotonic increasing stack. For each bar, find largest rectangle with that bar as minimum height.</p>
+                    </div>
+                    <h4>🔥 Optimal Solution</h4>
+                    <pre>class Solution {
+    public int largestRectangleArea(int[] heights) {
+        Stack&lt;Integer&gt; stack = new Stack&lt;&gt;(); // Store indices
+        int maxArea = 0;
+        
+        for (int i = 0; i &lt;= heights.length; i++) {
+            // Use 0 as sentinel value for last iteration
+            int currentHeight = (i == heights.length) ? 0 : heights[i];
+            
+            // While stack not empty and current height &lt; stack top height
+            while (!stack.isEmpty() && currentHeight &lt; heights[stack.peek()]) {
+                int height = heights[stack.pop()];
+                int width = stack.isEmpty() ? i : i - stack.peek() - 1;
+                maxArea = Math.max(maxArea, height * width);
+            }
+            
+            stack.push(i);
+        }
+        
+        return maxArea;
+    }
+}</pre>
+                    <div class="complexity-info">
+                        <h4>⚡ Complexity Analysis</h4>
+                        <p><strong>Time:</strong> O(n) - Each element pushed and popped at most once</p>
+                        <p><strong>Space:</strong> O(n) - Stack storage in worst case</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navigation">
+        <a href="neetcode_150_index.html" class="nav-btn">🏠 Home</a>
+        <a href="problem_024_car_fleet.html" class="nav-btn">← Previous: Car Fleet</a>
+        <span class="nav-btn" style="background: rgba(255,255,255,0.1);">Problem 25 of 150</span>
+        <a href="problem_026_binary_search.html" class="nav-btn">Next: Binary Search →</a>
+    </div>
+    <script>
+        let editor, solutionVisible = false, hintVisible = false;
+        const problemTemplate = `class Solution {\n    public int largestRectangleArea(int[] heights) {\n        // Write your solution here\n        \n    }\n}`;
+        const problemSolution = `class Solution {\n    public int largestRectangleArea(int[] heights) {\n        Stack<Integer> stack = new Stack<>();\n        int maxArea = 0;\n        \n        for (int i = 0; i <= heights.length; i++) {\n            int currentHeight = (i == heights.length) ? 0 : heights[i];\n            \n            while (!stack.isEmpty() && currentHeight < heights[stack.peek()]) {\n                int height = heights[stack.pop()];\n                int width = stack.isEmpty() ? i : i - stack.peek() - 1;\n                maxArea = Math.max(maxArea, height * width);\n            }\n            \n            stack.push(i);\n        }\n        \n        return maxArea;\n    }\n}`;
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: problemTemplate, language: 'java', theme: 'vs-dark', fontSize: 14, minimap: { enabled: false }, automaticLayout: true, wordWrap: 'on'
+            });
+        });
+        function loadSolution() { if (editor) editor.setValue(problemSolution); }
+        function resetCode() { if (editor) editor.setValue(problemTemplate); }
+        function toggleHint() { const overlay = document.getElementById('hintOverlay'); hintVisible = !hintVisible; overlay.classList.toggle('show', hintVisible); }
+        function closeHintIfClickedOutside(event) { if (event.target === document.getElementById('hintOverlay')) toggleHint(); }
+        function runCode() { alert('🚀 Code execution simulation!'); }
+        function toggleSolution() { const col = document.getElementById('solutionColumn'), btn = document.getElementById('toggleBtn'); solutionVisible = !solutionVisible; col.classList.toggle('collapsed', !solutionVisible); btn.textContent = solutionVisible ? '🙈 Hide Solution' : '👁️ View Solution'; }
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && hintVisible) toggleHint(); });
+    </script>
+</body>
+</html>

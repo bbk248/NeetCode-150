@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 2: Valid Anagram - NeetCode 150</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .problem-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: #4CAF50;
+            color: white;
+        }
+
+        .category-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .leetcode-link, .video-link {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .leetcode-link:hover, .video-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .video-link {
+            background: rgba(255, 0, 0, 0.3);
+        }
+
+        .video-link:hover {
+            background: rgba(255, 0, 0, 0.5);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary { background: #2196F3; color: white; }
+        .btn-success { background: #4CAF50; color: white; }
+        .btn-warning { background: #FF9800; color: white; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 140px);
+            gap: 1px;
+        }
+
+        .column {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column.problem-column {
+            flex: 1;
+        }
+
+        .column.editor-column {
+            flex: 1;
+        }
+
+        .column.solution-column {
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .column.solution-column.collapsed {
+            flex: 0;
+            min-width: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .column-header {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .problem-statement {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .problem-statement h3 {
+            color: #2196F3;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .problem-statement p {
+            margin-bottom: 15px;
+        }
+
+        .example {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .constraints {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Company tags section */
+        .companies-section {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .companies-section h4 {
+            color: #7b1fa2;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .company-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .company-tag {
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .company-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .company-count {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+
+        /* Video section */
+        .video-section {
+            background: linear-gradient(135deg, #ffebee, #fce4ec);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #e91e63;
+        }
+
+        .video-section h4 {
+            color: #c2185b;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .video-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ff1744, #d50000);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .video-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #d50000, #b71c1c);
+        }
+
+        #editor {
+            height: 100%;
+            border: none;
+        }
+
+        .solution-content {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .solution-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .approach-section {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .complexity-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .complexity-info h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .toggle-btn:hover {
+            color: #333;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* HINT MODAL DESIGN */
+        .hint-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .hint-overlay.show {
+            display: flex;
+        }
+
+        .hint-modal {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: scale(0.8);
+            animation: modalSlideIn 0.3s ease forwards;
+            position: relative;
+        }
+
+        .hint-modal h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hint-modal .hint-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hint-content {
+            line-height: 1.6;
+        }
+
+        .hint-content p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .hint-content .key-insight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #fff;
+        }
+
+        .hint-content .algorithm-steps {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .hint-content ol {
+            padding-left: 20px;
+        }
+
+        .hint-content li {
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .hint-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .hint-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .hint-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hint-footer button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .hint-footer button:hover {
+            background: white;
+            color: #4CAF50;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: scale(0.8) translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .column {
+                min-height: 400px;
+            }
+
+            .column.solution-column.collapsed {
+                min-height: 0;
+                height: 0;
+            }
+
+            .hint-modal {
+                margin: 20px;
+                max-width: calc(100% - 40px);
+            }
+
+            .company-tags {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Problem 2: Valid Anagram</h1>
+        <p>NeetCode 150 - Interactive Java Solution with Video & Company Data</p>
+    </div>
+
+    <div class="controls">
+        <div class="problem-info">
+            <span class="difficulty-badge">Easy</span>
+            <span class="category-badge">Arrays & Hashing</span>
+            <a href="https://leetcode.com/problems/valid-anagram/" target="_blank" class="leetcode-link">🔗 LeetCode 242</a>
+            <a href="https://www.youtube.com/watch?v=9UtInBqnCgA" target="_blank" class="video-link">📺 Video Solution</a>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="runCode()">▶️ Run Code</button>
+            <button class="btn btn-info" onclick="toggleHint()">💭 Get Hint</button>
+            <button class="btn btn-success" onclick="loadSolution()">📥 Load Solution</button>
+            <button class="btn btn-warning" onclick="resetCode()">🔄 Reset</button>
+            <button class="btn btn-secondary" onclick="toggleSolution()" id="toggleBtn">👁️ View Solution</button>
+        </div>
+    </div>
+
+    <!-- HINT MODAL -->
+    <div class="hint-overlay" id="hintOverlay" onclick="closeHintIfClickedOutside(event)">
+        <div class="hint-modal" onclick="event.stopPropagation()">
+            <button class="hint-close" onclick="toggleHint()">×</button>
+            
+            <div class="hint-icon">💡</div>
+            <h3>💭 Hint: Valid Anagram</h3>
+            
+            <div class="hint-content">
+                <div class="key-insight">
+                    <p><strong>🔑 Key Insight:</strong> Two strings are anagrams if they contain the same characters with the same frequencies. You can either sort both strings and compare, or count character frequencies.</p>
+                </div>
+
+                <p><strong>🤔 Think about:</strong> What are the different ways to check if two strings have the same character frequencies?</p>
+
+                <div class="algorithm-steps">
+                    <p><strong>📋 Algorithm Approaches:</strong></p>
+                    <ol>
+                        <li><strong>Sorting Approach:</strong> Sort both strings and compare if they're equal</li>
+                        <li><strong>Frequency Count:</strong> Count frequency of each character in both strings</li>
+                        <li><strong>HashMap:</strong> Use a map to track character counts</li>
+                        <li><strong>Array Count:</strong> Use an array for lowercase letters (more efficient)</li>
+                    </ol>
+                </div>
+
+                <p><strong>⚡ Time Complexity:</strong> O(n log n) for sorting, O(n) for frequency counting</p>
+                <p><strong>💾 Space Complexity:</strong> O(1) for array counting, O(n) for sorting</p>
+            </div>
+
+            <div class="hint-footer">
+                <button onclick="toggleHint()">Got it! Let me try 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="column problem-column">
+            <div class="column-header">
+                📋 Problem Statement
+            </div>
+            <div class="column-content">
+                <div class="problem-statement">
+                    <h3>Valid Anagram</h3>
+                    <p><strong>Problem:</strong> Given two strings s and t, return true if t is an anagram of s, and false otherwise.</p>
+                    <p>An <strong>Anagram</strong> is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.</p>
+                    
+                    <div class="example">
+                        <strong>Example 1:</strong><br>
+                        Input: s = "anagram", t = "nagaram"<br>
+                        Output: true<br>
+                        Explanation: Both strings contain the same characters with the same frequencies.
+                    </div>
+                    
+                    <div class="example">
+                        <strong>Example 2:</strong><br>
+                        Input: s = "rat", t = "car"<br>
+                        Output: false<br>
+                        Explanation: Different characters, so not anagrams.
+                    </div>
+                    
+                    <div class="constraints">
+                        <strong>Constraints:</strong><br>
+                        • 1 ≤ s.length, t.length ≤ 5 × 10⁴<br>
+                        • s and t consist of lowercase English letters.
+                    </div>
+
+                    <!-- Video Solution Section -->
+                    <div class="video-section">
+                        <h4>📺 Video Explanation</h4>
+                        <p>Watch NeetCode's detailed explanation of this problem:</p>
+                        <a href="https://www.youtube.com/watch?v=9UtInBqnCgA" target="_blank" class="video-button">
+                            🎥 Watch Video Solution
+                        </a>
+                    </div>
+
+                    <!-- Companies Section -->
+                    <div class="companies-section">
+                        <h4>🏢 Asked by Companies</h4>
+                        <p style="margin-bottom: 15px; font-size: 0.9em; color: #666;">This problem has been asked in technical interviews at:</p>
+                        <div class="company-tags">
+                            <div class="company-tag">
+                                Amazon <span class="company-count">12</span>
+                            </div>
+                            <div class="company-tag">
+                                Microsoft <span class="company-count">8</span>
+                            </div>
+                            <div class="company-tag">
+                                Facebook <span class="company-count">6</span>
+                            </div>
+                            <div class="company-tag">
+                                Google <span class="company-count">5</span>
+                            </div>
+                            <div class="company-tag">
+                                Apple <span class="company-count">4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="column editor-column">
+            <div class="column-header">
+                💻 Code Editor
+                <div style="font-size: 12px; font-weight: normal;">
+                    <span style="color: #666;">Java</span>
+                </div>
+            </div>
+            <div class="column-content" style="padding: 0;">
+                <div id="editor"></div>
+            </div>
+        </div>
+
+        <!-- Solution column starts collapsed -->
+        <div class="column solution-column collapsed" id="solutionColumn">
+            <div class="column-header">
+                ✅ Java Solution
+                <div>
+                    <button class="btn btn-info" style="padding: 5px 10px; font-size: 12px;" onclick="copyToClipboard()">📋 Copy</button>
+                    <button class="toggle-btn" onclick="toggleSolution()">❌</button>
+                </div>
+            </div>
+            <div class="column-content">
+                <div class="solution-content">
+                    <div class="approach-section">
+                        <h4>💡 Approach</h4>
+                        <p>The optimal approach uses character frequency counting with an array. Since we only have lowercase English letters, we can use an array of size 26 to count frequencies. We increment for characters in string s and decrement for characters in string t. If all counts are zero at the end, the strings are anagrams.</p>
+                    </div>
+                    
+                    <h4>🔥 Optimal Solution</h4>
+                    <pre>class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        
+        int[] count = new int[26];
+        
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+            count[t.charAt(i) - 'a']--;
+        }
+        
+        for (int c : count) {
+            if (c != 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}</pre>
+                    
+                    <div class="complexity-info">
+                        <h4>⚡ Complexity Analysis</h4>
+                        <p><strong>Time Complexity:</strong> O(n) - We iterate through both strings once</p>
+                        <p><strong>Space Complexity:</strong> O(1) - We use a fixed-size array of 26 elements</p>
+                    </div>
+
+                    <div class="approach-section">
+                        <h4>🤔 Alternative Approaches</h4>
+                        <p><strong>1. Sorting:</strong> O(n log n) time, O(1) space - Sort both strings and compare</p>
+                        <p><strong>2. HashMap:</strong> O(n) time, O(n) space - Use HashMap to count frequencies</p>
+                        <p><strong>3. Array Count (Current):</strong> O(n) time, O(1) space - Optimal for lowercase letters</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <a href="neetcode_150_index.html" class="nav-btn">🏠 Home</a>
+        <a href="problem_001_contains_duplicate.html" class="nav-btn">← Previous: Contains Duplicate</a>
+        <span class="nav-btn" style="background: rgba(255,255,255,0.1);">Problem 2 of 150</span>
+        <a href="problem_003_two_sum.html" class="nav-btn">Next: Two Sum →</a>
+    </div>
+
+    <script>
+        let editor;
+        let solutionVisible = false;
+        let hintVisible = false;
+
+        const problemTemplate = `class Solution {
+    public boolean isAnagram(String s, String t) {
+        // Write your solution here
+        // Hint: Think about character frequencies
+        
+    }
+}`;
+
+        const problemSolution = `class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        
+        int[] count = new int[26];
+        
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+            count[t.charAt(i) - 'a']--;
+        }
+        
+        for (int c : count) {
+            if (c != 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}`;
+
+        // Initialize Monaco Editor
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: problemTemplate,
+                language: 'java',
+                theme: 'vs-dark',
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                wordWrap: 'on'
+            });
+        });
+
+        function loadSolution() {
+            if (editor) {
+                editor.setValue(problemSolution);
+            }
+        }
+
+        function resetCode() {
+            if (editor) {
+                editor.setValue(problemTemplate);
+            }
+        }
+
+        function toggleHint() {
+            const hintOverlay = document.getElementById('hintOverlay');
+            hintVisible = !hintVisible;
+            
+            if (hintVisible) {
+                hintOverlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            } else {
+                hintOverlay.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function closeHintIfClickedOutside(event) {
+            if (event.target === document.getElementById('hintOverlay')) {
+                toggleHint();
+            }
+        }
+
+        function runCode() {
+            const code = editor ? editor.getValue() : 'No code';
+            alert('🚀 Code execution simulation!\n\nIn a real implementation, this would:\n• Compile your Java code\n• Run test cases\n• Show execution results\n• Display runtime and memory usage\n\nYour code:\n' + code.substring(0, 100) + '...');
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(problemSolution).then(() => {
+                alert('✅ Solution copied to clipboard!');
+            });
+        }
+
+        function toggleSolution() {
+            const solutionColumn = document.getElementById('solutionColumn');
+            const toggleBtn = document.getElementById('toggleBtn');
+            
+            solutionVisible = !solutionVisible;
+            
+            if (solutionVisible) {
+                solutionColumn.classList.remove('collapsed');
+                toggleBtn.textContent = '🙈 Hide Solution';
+            } else {
+                solutionColumn.classList.add('collapsed');
+                toggleBtn.textContent = '👁️ View Solution';
+            }
+        }
+
+        // Close hint modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && hintVisible) {
+                toggleHint();
+            }
+        });
+    </script>
+</body>
+</html>

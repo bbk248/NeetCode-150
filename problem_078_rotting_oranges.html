@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 78: Rotting Oranges - NeetCode 150</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; text-align: center; color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .controls { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2); flex-wrap: wrap; gap: 15px; }
+        .problem-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .difficulty-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; background: #FF9800; color: white; }
+        .category-badge { background: rgba(255, 255, 255, 0.2); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .leetcode-link, .video-link { color: white; text-decoration: none; padding: 5px 10px; background: rgba(255, 255, 255, 0.2); border-radius: 6px; font-size: 12px; transition: all 0.3s ease; }
+        .video-link { background: rgba(255, 0, 0, 0.3); }
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; font-size: 14px; }
+        .btn-primary { background: #2196F3; color: white; } .btn-success { background: #4CAF50; color: white; } .btn-warning { background: #FF9800; color: white; } .btn-info { background: #17a2b8; color: white; } .btn-secondary { background: #6c757d; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .container { display: flex; height: calc(100vh - 140px); gap: 1px; }
+        .column { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); overflow: hidden; display: flex; flex-direction: column; }
+        .column.problem-column { flex: 1; } .column.editor-column { flex: 1; } .column.solution-column { flex: 1; transition: all 0.3s ease; }
+        .column.solution-column.collapsed { flex: 0; min-width: 0; opacity: 0; overflow: hidden; }
+        .column-header { background: rgba(0, 0, 0, 0.1); padding: 15px 20px; font-weight: bold; font-size: 16px; color: #333; border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .column-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .problem-statement { line-height: 1.6; color: #333; }
+        .problem-statement h3 { color: #2196F3; margin-bottom: 15px; font-size: 1.3em; }
+        .problem-statement p { margin-bottom: 15px; }
+        .example { background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .constraints { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .companies-section { background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #9c27b0; }
+        .companies-section h4 { color: #7b1fa2; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .company-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .company-tag { background: linear-gradient(135deg, #9c27b0, #673ab7); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .company-count { background: rgba(255, 255, 255, 0.3); padding: 2px 6px; border-radius: 10px; font-size: 10px; }
+        .video-section { background: linear-gradient(135deg, #ffebee, #fce4ec); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #e91e63; }
+        .video-section h4 { color: #c2185b; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .video-button { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #ff1744, #d50000); color: white; padding: 12px 20px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        #editor { height: 100%; border: none; }
+        .solution-content { font-family: 'Courier New', monospace; background: #f8f9fa; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .solution-content pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .approach-section { background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .complexity-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #2196F3; }
+        .complexity-info h4 { color: #1976d2; margin-bottom: 10px; }
+        .navigation { background: rgba(255, 255, 255, 0.1); padding: 10px 20px; text-align: center; }
+        .nav-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .hint-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .hint-overlay.show { display: flex; }
+        .hint-modal { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 20px; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative; }
+        .hint-modal h3 { font-size: 1.8em; margin-bottom: 20px; text-align: center; }
+        .hint-content { line-height: 1.6; }
+        .hint-content .key-insight { background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #fff; }
+        .hint-close { position: absolute; top: 15px; right: 20px; background: rgba(255, 255, 255, 0.2); border: none; color: white; font-size: 24px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; }
+        @media (max-width: 1200px) { .container { flex-direction: column; height: auto; } .column { min-height: 400px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Problem 78: Rotting Oranges</h1>
+        <p>NeetCode 150 - Interactive Java Solution with Video & Company Data</p>
+    </div>
+    <div class="controls">
+        <div class="problem-info">
+            <span class="difficulty-badge">Medium</span>
+            <span class="category-badge">Graphs</span>
+            <a href="https://leetcode.com/problems/rotting-oranges/" target="_blank" class="leetcode-link">🔗 LeetCode 994</a>
+            <a href="https://www.youtube.com/watch?v=y704fEOx0s0" target="_blank" class="video-link">📺 Video Solution</a>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="runCode()">▶️ Run Code</button>
+            <button class="btn btn-info" onclick="toggleHint()">💭 Get Hint</button>
+            <button class="btn btn-success" onclick="loadSolution()">📥 Load Solution</button>
+            <button class="btn btn-warning" onclick="resetCode()">🔄 Reset</button>
+            <button class="btn btn-secondary" onclick="toggleSolution()" id="toggleBtn">👁️ View Solution</button>
+        </div>
+    </div>
+    <div class="hint-overlay" id="hintOverlay" onclick="closeHintIfClickedOutside(event)">
+        <div class="hint-modal" onclick="event.stopPropagation()">
+            <button class="hint-close" onclick="toggleHint()">×</button>
+            <div style="font-size: 3em; text-align: center; margin-bottom: 20px;">💡</div>
+            <h3>💭 Hint: Rotting Oranges</h3>
+            <div class="hint-content">
+                <div class="key-insight">
+                    <p><strong>🔑 Key Insight:</strong> Use BFS! Start with all rotten oranges in queue. Each minute, rot adjacent fresh oranges. Count minutes until no fresh oranges remain.</p>
+                </div>
+                <p><strong>🤔 Think about:</strong> How can you simulate the simultaneous rotting process across multiple oranges?</p>
+                <p><strong>⚡ Time Complexity:</strong> O(m × n) where m and n are grid dimensions</p>
+            </div>
+            <div style="text-align: center; margin-top: 25px;">
+                <button onclick="toggleHint()" style="background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">Got it! Let me try 🚀</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="column problem-column">
+            <div class="column-header">📋 Problem Statement</div>
+            <div class="column-content">
+                <div class="problem-statement">
+                    <h3>Rotting Oranges</h3>
+                    <p><strong>Problem:</strong> You are given an <code>m x n</code> <code>grid</code> where each cell can have one of three values:</p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li><code>0</code> representing an empty cell,</li>
+                        <li><code>1</code> representing a fresh orange, or</li>
+                        <li><code>2</code> representing a rotten orange.</li>
+                    </ul>
+                    <p>Every minute, any fresh orange that is <strong>4-directionally adjacent</strong> to a rotten orange becomes rotten.</p>
+                    <p>Return <em>the minimum number of minutes that must elapse until no cell has a fresh orange</em>. If <em>this is impossible, return</em> <code>-1</code>.</p>
+                    <div class="example">
+                        <strong>Example 1:</strong><br>
+                        Input: grid = [[2,1,1],[1,1,0],[0,1,1]]<br>
+                        Output: 4
+                    </div>
+                    <div class="example">
+                        <strong>Example 2:</strong><br>
+                        Input: grid = [[2,1,1],[0,1,1],[1,0,1]]<br>
+                        Output: -1<br>
+                        Explanation: The orange in the bottom left corner (row 2, column 0) is never rotten, because rotting only happens 4-directionally.
+                    </div>
+                    <div class="example">
+                        <strong>Example 3:</strong><br>
+                        Input: grid = [[0,2]]<br>
+                        Output: 0<br>
+                        Explanation: Since there are already no fresh oranges at minute 0, the answer is just 0.
+                    </div>
+                    <div class="constraints">
+                        <strong>Constraints:</strong><br>
+                        • m == grid.length<br>
+                        • n == grid[i].length<br>
+                        • 1 ≤ m, n ≤ 10<br>
+                        • grid[i][j] is 0, 1, or 2.
+                    </div>
+                    <div class="video-section">
+                        <h4>📺 Video Explanation</h4>
+                        <p>Watch NeetCode's detailed explanation:</p>
+                        <a href="https://www.youtube.com/watch?v=y704fEOx0s0" target="_blank" class="video-button">🎥 Watch Video Solution</a>
+                    </div>
+                    <div class="companies-section">
+                        <h4>🏢 Asked by Companies</h4>
+                        <div class="company-tags">
+                            <div class="company-tag">Amazon <span class="company-count">25</span></div>
+                            <div class="company-tag">Microsoft <span class="company-count">20</span></div>
+                            <div class="company-tag">Google <span class="company-count">15</span></div>
+                            <div class="company-tag">Apple <span class="company-count">12</span></div>
+                            <div class="company-tag">Facebook <span class="company-count">10</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column editor-column">
+            <div class="column-header">💻 Code Editor</div>
+            <div class="column-content" style="padding: 0;"><div id="editor"></div></div>
+        </div>
+        <div class="column solution-column collapsed" id="solutionColumn">
+            <div class="column-header">✅ Java Solution</div>
+            <div class="column-content">
+                <div class="solution-content">
+                    <div class="approach-section">
+                        <h4>💡 Approach</h4>
+                        <p>BFS: Start with all rotten oranges in queue. Each minute, rot adjacent fresh oranges. Count minutes.</p>
+                    </div>
+                    <h4>🔥 Optimal Solution</h4>
+                    <pre>class Solution {
+    public int orangesRotting(int[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        
+        int m = grid.length;
+        int n = grid[0].length;
+        Queue&lt;int[]&gt; queue = new LinkedList&lt;&gt;();
+        int freshCount = 0;
+        
+        // Find all rotten oranges and count fresh oranges
+        for (int i = 0; i &lt; m; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                if (grid[i][j] == 2) {
+                    queue.offer(new int[]{i, j});
+                } else if (grid[i][j] == 1) {
+                    freshCount++;
+                }
+            }
+        }
+        
+        // If no fresh oranges, return 0
+        if (freshCount == 0) {
+            return 0;
+        }
+        
+        int minutes = 0;
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        
+        // BFS to rot oranges level by level
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            boolean rotted = false;
+            
+            // Process all oranges at current minute
+            for (int i = 0; i &lt; size; i++) {
+                int[] current = queue.poll();
+                int row = current[0];
+                int col = current[1];
+                
+                // Check all 4 directions
+                for (int[] dir : directions) {
+                    int newRow = row + dir[0];
+                    int newCol = col + dir[1];
+                    
+                    // Check bounds and if orange is fresh
+                    if (newRow &gt;= 0 && newRow &lt; m && newCol &gt;= 0 && newCol &lt; n &&
+                        grid[newRow][newCol] == 1) {
+                        
+                        // Rot the fresh orange
+                        grid[newRow][newCol] = 2;
+                        queue.offer(new int[]{newRow, newCol});
+                        freshCount--;
+                        rotted = true;
+                    }
+                }
+            }
+            
+            // If any orange rotted this minute, increment time
+            if (rotted) {
+                minutes++;
+            }
+        }
+        
+        // Return minutes if all oranges rotted, otherwise -1
+        return freshCount == 0 ? minutes : -1;
+    }
+}</pre>
+                    <div class="complexity-info">
+                        <h4>⚡ Complexity Analysis</h4>
+                        <p><strong>Time:</strong> O(m × n) where m and n are grid dimensions</p>
+                        <p><strong>Space:</strong> O(m × n) for queue in worst case</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navigation">
+        <a href="neetcode_150_index.html" class="nav-btn">🏠 Home</a>
+        <a href="problem_077_surrounded_regions.html" class="nav-btn">← Previous: Surrounded Regions</a>
+        <span class="nav-btn" style="background: rgba(255,255,255,0.1);">Problem 78 of 150</span>
+        <a href="problem_079_walls_and_gates.html" class="nav-btn">Next: Walls and Gates →</a>
+    </div>
+    <script>
+        let editor, solutionVisible = false, hintVisible = false;
+        const problemTemplate = `class Solution {\n    public int orangesRotting(int[][] grid) {\n        // Write your solution here\n        \n    }\n}`;
+        const problemSolution = `class Solution {\n    public int orangesRotting(int[][] grid) {\n        if (grid == null || grid.length == 0) {\n            return 0;\n        }\n        \n        int m = grid.length;\n        int n = grid[0].length;\n        Queue<int[]> queue = new LinkedList<>();\n        int freshCount = 0;\n        \n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid[i][j] == 2) {\n                    queue.offer(new int[]{i, j});\n                } else if (grid[i][j] == 1) {\n                    freshCount++;\n                }\n            }\n        }\n        \n        if (freshCount == 0) {\n            return 0;\n        }\n        \n        int minutes = 0;\n        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n        \n        while (!queue.isEmpty()) {\n            int size = queue.size();\n            boolean rotted = false;\n            \n            for (int i = 0; i < size; i++) {\n                int[] current = queue.poll();\n                int row = current[0];\n                int col = current[1];\n                \n                for (int[] dir : directions) {\n                    int newRow = row + dir[0];\n                    int newCol = col + dir[1];\n                    \n                    if (newRow >= 0 && newRow < m && newCol >= 0 && newCol < n &&\n                        grid[newRow][newCol] == 1) {\n                        \n                        grid[newRow][newCol] = 2;\n                        queue.offer(new int[]{newRow, newCol});\n                        freshCount--;\n                        rotted = true;\n                    }\n                }\n            }\n            \n            if (rotted) {\n                minutes++;\n            }\n        }\n        \n        return freshCount == 0 ? minutes : -1;\n    }\n}`;
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: problemTemplate, language: 'java', theme: 'vs-dark', fontSize: 14, minimap: { enabled: false }, automaticLayout: true, wordWrap: 'on'
+            });
+        });
+        function loadSolution() { if (editor) editor.setValue(problemSolution); }
+        function resetCode() { if (editor) editor.setValue(problemTemplate); }
+        function toggleHint() { const overlay = document.getElementById('hintOverlay'); hintVisible = !hintVisible; overlay.classList.toggle('show', hintVisible); }
+        function closeHintIfClickedOutside(event) { if (event.target === document.getElementById('hintOverlay')) toggleHint(); }
+        function runCode() { alert('🚀 Code execution simulation!'); }
+        function toggleSolution() { const col = document.getElementById('solutionColumn'), btn = document.getElementById('toggleBtn'); solutionVisible = !solutionVisible; col.classList.toggle('collapsed', !solutionVisible); btn.textContent = solutionVisible ? '🙈 Hide Solution' : '👁️ View Solution'; }
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && hintVisible) toggleHint(); });
+    </script>
+</body>
+</html>
