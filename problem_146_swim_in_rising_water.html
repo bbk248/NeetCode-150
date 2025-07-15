@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 146: Swim in Rising Water - NeetCode 150</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; text-align: center; color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .controls { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2); flex-wrap: wrap; gap: 15px; }
+        .problem-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .difficulty-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; background: #f44336; color: white; }
+        .category-badge { background: rgba(255, 255, 255, 0.2); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .leetcode-link, .video-link { color: white; text-decoration: none; padding: 5px 10px; background: rgba(255, 255, 255, 0.2); border-radius: 6px; font-size: 12px; transition: all 0.3s ease; }
+        .video-link { background: rgba(255, 0, 0, 0.3); }
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; font-size: 14px; }
+        .btn-primary { background: #2196F3; color: white; } .btn-success { background: #4CAF50; color: white; } .btn-warning { background: #FF9800; color: white; } .btn-info { background: #17a2b8; color: white; } .btn-secondary { background: #6c757d; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .container { display: flex; height: calc(100vh - 140px); gap: 1px; }
+        .column { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); overflow: hidden; display: flex; flex-direction: column; }
+        .column.problem-column { flex: 1; } .column.editor-column { flex: 1; } .column.solution-column { flex: 1; transition: all 0.3s ease; }
+        .column.solution-column.collapsed { flex: 0; min-width: 0; opacity: 0; overflow: hidden; }
+        .column-header { background: rgba(0, 0, 0, 0.1); padding: 15px 20px; font-weight: bold; font-size: 16px; color: #333; border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .column-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .problem-statement { line-height: 1.6; color: #333; }
+        .problem-statement h3 { color: #2196F3; margin-bottom: 15px; font-size: 1.3em; }
+        .problem-statement p { margin-bottom: 15px; }
+        .example { background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .constraints { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .companies-section { background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #9c27b0; }
+        .companies-section h4 { color: #7b1fa2; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .company-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .company-tag { background: linear-gradient(135deg, #9c27b0, #673ab7); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .company-count { background: rgba(255, 255, 255, 0.3); padding: 2px 6px; border-radius: 10px; font-size: 10px; }
+        .video-section { background: linear-gradient(135deg, #ffebee, #fce4ec); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #e91e63; }
+        .video-section h4 { color: #c2185b; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .video-button { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #ff1744, #d50000); color: white; padding: 12px 20px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        #editor { height: 100%; border: none; }
+        .solution-content { font-family: 'Courier New', monospace; background: #f8f9fa; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .solution-content pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .approach-section { background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .complexity-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #2196F3; }
+        .complexity-info h4 { color: #1976d2; margin-bottom: 10px; }
+        .navigation { background: rgba(255, 255, 255, 0.1); padding: 10px 20px; text-align: center; }
+        .nav-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .hint-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .hint-overlay.show { display: flex; }
+        .hint-modal { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 20px; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative; }
+        .hint-modal h3 { font-size: 1.8em; margin-bottom: 20px; text-align: center; }
+        .hint-content { line-height: 1.6; }
+        .hint-content .key-insight { background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #fff; }
+        .hint-close { position: absolute; top: 15px; right: 20px; background: rgba(255, 255, 255, 0.2); border: none; color: white; font-size: 24px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; }
+        @media (max-width: 1200px) { .container { flex-direction: column; height: auto; } .column { min-height: 400px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Problem 146: Swim in Rising Water</h1>
+        <p>NeetCode 150 - Interactive Java Solution with Video & Company Data</p>
+    </div>
+    <div class="controls">
+        <div class="problem-info">
+            <span class="difficulty-badge">Hard</span>
+            <span class="category-badge">Advanced</span>
+            <a href="https://leetcode.com/problems/swim-in-rising-water/" target="_blank" class="leetcode-link">🔗 LeetCode 778</a>
+            <a href="https://www.youtube.com/watch?v=amvrKlMLuGY" target="_blank" class="video-link">📺 Video Solution</a>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="runCode()">▶️ Run Code</button>
+            <button class="btn btn-info" onclick="toggleHint()">💭 Get Hint</button>
+            <button class="btn btn-success" onclick="loadSolution()">📥 Load Solution</button>
+            <button class="btn btn-warning" onclick="resetCode()">🔄 Reset</button>
+            <button class="btn btn-secondary" onclick="toggleSolution()" id="toggleBtn">👁️ View Solution</button>
+        </div>
+    </div>
+    <div class="hint-overlay" id="hintOverlay" onclick="closeHintIfClickedOutside(event)">
+        <div class="hint-modal" onclick="event.stopPropagation()">
+            <button class="hint-close" onclick="toggleHint()">×</button>
+            <div style="font-size: 3em; text-align: center; margin-bottom: 20px;">💡</div>
+            <h3>💭 Hint: Swim in Rising Water</h3>
+            <div class="hint-content">
+                <div class="key-insight">
+                    <p><strong>🔑 Key Insight:</strong> Use Dijkstra's algorithm! Find path with minimum maximum elevation. Priority queue with (max_elevation_so_far, row, col). Always choose path with smallest maximum elevation.</p>
+                </div>
+                <p><strong>🤔 Think about:</strong> How is this different from shortest path? What are you minimizing?</p>
+                <p><strong>⚡ Time Complexity:</strong> O(n² log n) where n is grid dimension</p>
+            </div>
+            <div style="text-align: center; margin-top: 25px;">
+                <button onclick="toggleHint()" style="background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">Got it! Let me try 🚀</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="column problem-column">
+            <div class="column-header">📋 Problem Statement</div>
+            <div class="column-content">
+                <div class="problem-statement">
+                    <h3>Swim in Rising Water</h3>
+                    <p><strong>Problem:</strong> You are given an <code>n x n</code> integer matrix <code>grid</code> where each value <code>grid[i][j]</code> represents the elevation at that point <code>(i, j)</code>.</p>
+                    <p>The rain starts to fall. At time <code>t</code>, the depth of the water everywhere is <code>t</code>. You can swim from a square to another 4-directionally adjacent square if and only if the elevation of both squares individually are at most <code>t</code>. You can swim infinite distance in zero time. Of course, you must stay within the boundaries of the grid during your swim.</p>
+                    <p>Return <em>the least time until you can reach the bottom right square</em> <code>(n - 1, n - 1)</code> <em>if you start at the top left square</em> <code>(0, 0)</code>.</p>
+                    <div class="example">
+                        <strong>Example 1:</strong><br>
+                        Input: grid = [[0,2],[1,3]]<br>
+                        Output: 3<br>
+                        Explanation:<br>
+                        At time 0, you are in grid location (0, 0).<br>
+                        You cannot go anywhere else because 4-directionally adjacent neighbors have a higher elevation than t = 0.<br>
+                        At time 1, you can go to (0, 1) or (1, 0) because they have elevation at most 1.<br>
+                        At time 2, you can go to (1, 1) because it has elevation at most 2.<br>
+                        At time 3, you can go to (1, 1) because it has elevation at most 3.
+                    </div>
+                    <div class="example">
+                        <strong>Example 2:</strong><br>
+                        Input: grid = [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]<br>
+                        Output: 16<br>
+                        Explanation: The final route is shown.<br>
+                        We need to wait until time 16 so that (0, 0) and (4, 4) are connected.
+                    </div>
+                    <div class="constraints">
+                        <strong>Constraints:</strong><br>
+                        • n == grid.length<br>
+                        • n == grid[i].length<br>
+                        • 1 ≤ n ≤ 50<br>
+                        • 0 ≤ grid[i][j] < n²
+                    </div>
+                    <div class="video-section">
+                        <h4>📺 Video Explanation</h4>
+                        <p>Watch NeetCode's detailed explanation:</p>
+                        <a href="https://www.youtube.com/watch?v=amvrKlMLuGY" target="_blank" class="video-button">🎥 Watch Video Solution</a>
+                    </div>
+                    <div class="companies-section">
+                        <h4>🏢 Asked by Companies</h4>
+                        <div class="company-tags">
+                            <div class="company-tag">Amazon <span class="company-count">12</span></div>
+                            <div class="company-tag">Microsoft <span class="company-count">10</span></div>
+                            <div class="company-tag">Google <span class="company-count">8</span></div>
+                            <div class="company-tag">Apple <span class="company-count">6</span></div>
+                            <div class="company-tag">Facebook <span class="company-count">5</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column editor-column">
+            <div class="column-header">💻 Code Editor</div>
+            <div class="column-content" style="padding: 0;"><div id="editor"></div></div>
+        </div>
+        <div class="column solution-column collapsed" id="solutionColumn">
+            <div class="column-header">✅ Java Solution</div>
+            <div class="column-content">
+                <div class="solution-content">
+                    <div class="approach-section">
+                        <h4>💡 Approach</h4>
+                        <p>Use Dijkstra's algorithm to find path with minimum maximum elevation. Priority queue with (max_elevation, row, col).</p>
+                    </div>
+                    <h4>🔥 Optimal Solution</h4>
+                    <pre>class Solution {
+    public int swimInWater(int[][] grid) {
+        int n = grid.length;
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        
+        // Priority queue: [max_elevation_so_far, row, col]
+        PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;((a, b) -&gt; a[0] - b[0]);
+        boolean[][] visited = new boolean[n][n];
+        
+        pq.offer(new int[]{grid[0][0], 0, 0});
+        
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int maxElevation = current[0];
+            int row = current[1];
+            int col = current[2];
+            
+            if (visited[row][col]) continue;
+            visited[row][col] = true;
+            
+            // Reached destination
+            if (row == n - 1 && col == n - 1) {
+                return maxElevation;
+            }
+            
+            // Explore neighbors
+            for (int[] dir : directions) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+                
+                if (newRow &gt;= 0 && newRow &lt; n && newCol &gt;= 0 && newCol &lt; n 
+                    && !visited[newRow][newCol]) {
+                    
+                    int newMaxElevation = Math.max(maxElevation, grid[newRow][newCol]);
+                    pq.offer(new int[]{newMaxElevation, newRow, newCol});
+                }
+            }
+        }
+        
+        return -1; // Should never reach here
+    }
+}</pre>
+                    <div class="complexity-info">
+                        <h4>⚡ Complexity Analysis</h4>
+                        <p><strong>Time:</strong> O(n² log n) where n is grid dimension</p>
+                        <p><strong>Space:</strong> O(n²) for visited array and priority queue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navigation">
+        <a href="neetcode_150_index.html" class="nav-btn">🏠 Home</a>
+        <a href="problem_145_bus_routes.html" class="nav-btn">← Previous: Bus Routes</a>
+        <span class="nav-btn" style="background: rgba(255,255,255,0.1);">Problem 146 of 150</span>
+        <a href="problem_147_median_of_two_sorted_arrays_ii.html" class="nav-btn">Next: Median of Two Sorted Arrays II →</a>
+    </div>
+    <script>
+        let editor, solutionVisible = false, hintVisible = false;
+        const problemTemplate = `class Solution {\n    public int swimInWater(int[][] grid) {\n        // Write your solution here\n        \n    }\n}`;
+        const problemSolution = `class Solution {\n    public int swimInWater(int[][] grid) {\n        int n = grid.length;\n        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};\n        \n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);\n        boolean[][] visited = new boolean[n][n];\n        \n        pq.offer(new int[]{grid[0][0], 0, 0});\n        \n        while (!pq.isEmpty()) {\n            int[] current = pq.poll();\n            int maxElevation = current[0];\n            int row = current[1];\n            int col = current[2];\n            \n            if (visited[row][col]) continue;\n            visited[row][col] = true;\n            \n            if (row == n - 1 && col == n - 1) {\n                return maxElevation;\n            }\n            \n            for (int[] dir : directions) {\n                int newRow = row + dir[0];\n                int newCol = col + dir[1];\n                \n                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < n \n                    && !visited[newRow][newCol]) {\n                    \n                    int newMaxElevation = Math.max(maxElevation, grid[newRow][newCol]);\n                    pq.offer(new int[]{newMaxElevation, newRow, newCol});\n                }\n            }\n        }\n        \n        return -1;\n    }\n}`;
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: problemTemplate, language: 'java', theme: 'vs-dark', fontSize: 14, minimap: { enabled: false }, automaticLayout: true, wordWrap: 'on'
+            });
+        });
+        function loadSolution() { if (editor) editor.setValue(problemSolution); }
+        function resetCode() { if (editor) editor.setValue(problemTemplate); }
+        function toggleHint() { const overlay = document.getElementById('hintOverlay'); hintVisible = !hintVisible; overlay.classList.toggle('show', hintVisible); }
+        function closeHintIfClickedOutside(event) { if (event.target === document.getElementById('hintOverlay')) toggleHint(); }
+        function runCode() { alert('🚀 Code execution simulation!'); }
+        function toggleSolution() { const col = document.getElementById('solutionColumn'), btn = document.getElementById('toggleBtn'); solutionVisible = !solutionVisible; col.classList.toggle('collapsed', !solutionVisible); btn.textContent = solutionVisible ? '🙈 Hide Solution' : '👁️ View Solution'; }
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && hintVisible) toggleHint(); });
+    </script>
+</body>
+</html>

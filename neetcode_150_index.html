@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeetCode 150 - Interactive Learning Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .progress-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .progress-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .reset-btn { background: linear-gradient(135deg, #F44336, #D32F2F); }
+        .export-btn { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .import-btn { background: linear-gradient(135deg, #2196F3, #1976D2); }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .categories-sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .categories-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .category-section {
+            margin-bottom: 15px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .category-header:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .category-header.active {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4CAF50;
+        }
+
+        .problems-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .problems-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .problems-table th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .problems-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .problem-row:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .problem-row.completed {
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .problem-row.needs-revision {
+            background: rgba(255, 152, 0, 0.1);
+        }
+
+        .difficulty-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.3);
+            min-width: 80px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .difficulty-badge.easy { 
+            background: linear-gradient(135deg, #4CAF50, #45a049); 
+            color: white;
+        }
+        
+        .difficulty-badge.medium { 
+            background: linear-gradient(135deg, #FF9800, #F57C00); 
+            color: white;
+        }
+        
+        .difficulty-badge.hard { 
+            background: linear-gradient(135deg, #F44336, #D32F2F); 
+            color: white;
+        }
+
+        .action-links {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-link {
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .solve-btn { 
+            background: linear-gradient(135deg, #667eea, #764ba2); 
+            color: white; 
+        }
+        
+        .leetcode-btn { 
+            background: linear-gradient(135deg, #ffa116, #e8910e); 
+            color: white; 
+        }
+        
+        .video-btn { 
+            background: linear-gradient(135deg, #ff1744, #d50000); 
+            color: white; 
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .status-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .completed-icon { 
+            background: linear-gradient(135deg, #4CAF50, #45a049); 
+            color: white; 
+        }
+        
+        .revision-icon { 
+            background: linear-gradient(135deg, #FF9800, #F57C00); 
+            color: white; 
+        }
+        
+        .incomplete-icon { 
+            background: rgba(255, 255, 255, 0.2); 
+            color: rgba(255, 255, 255, 0.6); 
+        }
+
+        .company-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-width: 200px;
+        }
+
+        .company-tag {
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 NeetCode 150</h1>
+        <p>Interactive Learning Platform with Progress Tracking</p>
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number" id="completed-count">0</span>
+                <span class="stat-label">Completed</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="revision-count">0</span>
+                <span class="stat-label">Need Revision</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="remaining-count">150</span>
+                <span class="stat-label">Remaining</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="progress-percentage">0%</span>
+                <span class="stat-label">Progress</span>
+            </div>
+        </div>
+        <div class="progress-controls">
+            <button class="progress-btn reset-btn" onclick="progressTracker.resetProgress()">
+                🔄 Reset Progress
+            </button>
+            <button class="progress-btn export-btn" onclick="progressTracker.exportProgress()">
+                📤 Export Progress
+            </button>
+            <button class="progress-btn import-btn" onclick="document.getElementById('import-input').click()">
+                📥 Import Progress
+            </button>
+            <input type="file" id="import-input" accept=".json" onchange="handleImport(event)" style="display: none;">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="categories-sidebar">
+            <h3 class="categories-title">📚 Categories</h3>
+            <div id="categories-list">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="problems-section">
+            <div class="filters">
+                <button class="filter-btn active" onclick="setFilter('all')">All Problems</button>
+                <button class="filter-btn" onclick="setFilter('easy')">Easy</button>
+                <button class="filter-btn" onclick="setFilter('medium')">Medium</button>
+                <button class="filter-btn" onclick="setFilter('hard')">Hard</button>
+                <button class="filter-btn" onclick="setFilter('completed')">Completed</button>
+                <button class="filter-btn" onclick="setFilter('revision')">Need Revision</button>
+            </div>
+
+            <table class="problems-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>Problem Title</th>
+                        <th style="width: 100px;">Difficulty</th>
+                        <th style="width: 220px;">Learning Actions</th>
+                        <th style="width: 120px;">Progress Status</th>
+                        <th style="width: 200px;">Companies</th>
+                    </tr>
+                </thead>
+                <tbody id="problems-tbody">
+                    <!-- Problems will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Sample problems data (first 50 problems)
+        const problemsData = [
+            // Arrays & Hashing (9 problems)
+            { id: 1, number: 1, title: "Contains Duplicate", difficulty: "easy", category: "Arrays & Hashing", file: "problem_001_contains_duplicate.html", leetcode: "https://leetcode.com/problems/contains-duplicate/", video: "https://www.youtube.com/watch?v=3OamzN90kPg", companies: ["Google", "Microsoft", "Amazon"] },
+            { id: 2, number: 2, title: "Valid Anagram", difficulty: "easy", category: "Arrays & Hashing", file: "problem_002_valid_anagram.html", leetcode: "https://leetcode.com/problems/valid-anagram/", video: "https://www.youtube.com/watch?v=9UtInBqnCgA", companies: ["Facebook", "Amazon", "Microsoft"] },
+            { id: 3, number: 3, title: "Two Sum", difficulty: "easy", category: "Arrays & Hashing", file: "problem_003_two_sum.html", leetcode: "https://leetcode.com/problems/two-sum/", video: "https://www.youtube.com/watch?v=KLlXCFG5TnA", companies: ["Google", "Amazon", "Apple"] },
+            { id: 4, number: 4, title: "Group Anagrams", difficulty: "medium", category: "Arrays & Hashing", file: "problem_004_group_anagrams.html", leetcode: "https://leetcode.com/problems/group-anagrams/", video: "https://www.youtube.com/watch?v=vzdNOK2oB2E", companies: ["Amazon", "Facebook", "Uber"] },
+            { id: 5, number: 5, title: "Top K Frequent Elements", difficulty: "medium", category: "Arrays & Hashing", file: "problem_005_top_k_frequent_elements.html", leetcode: "https://leetcode.com/problems/top-k-frequent-elements/", video: "https://www.youtube.com/watch?v=YPTqKIgVk-k", companies: ["Amazon", "Facebook", "Yelp"] },
+            { id: 6, number: 6, title: "Product of Array Except Self", difficulty: "medium", category: "Arrays & Hashing", file: "problem_006_product_of_array_except_self.html", leetcode: "https://leetcode.com/problems/product-of-array-except-self/", video: "https://www.youtube.com/watch?v=bNvIQI2wAjk", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 7, number: 7, title: "Valid Sudoku", difficulty: "medium", category: "Arrays & Hashing", file: "problem_007_valid_sudoku.html", leetcode: "https://leetcode.com/problems/valid-sudoku/", video: "https://www.youtube.com/watch?v=TjFXEUCMqI8", companies: ["Amazon", "Apple", "Snapchat"] },
+            { id: 8, number: 8, title: "Encode and Decode Strings", difficulty: "medium", category: "Arrays & Hashing", file: "problem_008_encode_and_decode_strings.html", leetcode: "https://leetcode.com/problems/encode-and-decode-strings/", video: "https://www.youtube.com/watch?v=B1k_sxXSxlM", companies: ["Google", "Facebook", "Amazon"] },
+            { id: 9, number: 9, title: "Longest Consecutive Sequence", difficulty: "medium", category: "Arrays & Hashing", file: "problem_009_longest_consecutive_sequence.html", leetcode: "https://leetcode.com/problems/longest-consecutive-sequence/", video: "https://www.youtube.com/watch?v=P6RZZMu_maU", companies: ["Google", "Facebook", "Amazon"] },
+            
+            // Two Pointers (3 problems)
+            { id: 10, number: 10, title: "Valid Palindrome", difficulty: "easy", category: "Two Pointers", file: "problem_010_valid_palindrome.html", leetcode: "https://leetcode.com/problems/valid-palindrome/", video: "https://www.youtube.com/watch?v=jJXJ16kPFWg", companies: ["Facebook", "Microsoft", "Amazon"] },
+            { id: 11, number: 11, title: "3Sum", difficulty: "medium", category: "Two Pointers", file: "problem_011_3sum.html", leetcode: "https://leetcode.com/problems/3sum/", video: "https://www.youtube.com/watch?v=jzZsG8n2R9A", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 12, number: 12, title: "Container With Most Water", difficulty: "medium", category: "Two Pointers", file: "problem_012_container_with_most_water.html", leetcode: "https://leetcode.com/problems/container-with-most-water/", video: "https://www.youtube.com/watch?v=UuiTKBwPgAo", companies: ["Amazon", "Facebook", "Bloomberg"] },
+            
+            // Sliding Window (6 problems)
+            { id: 13, number: 13, title: "Best Time to Buy and Sell Stock", difficulty: "easy", category: "Sliding Window", file: "problem_013_best_time_to_buy_and_sell_stock.html", leetcode: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/", video: "https://www.youtube.com/watch?v=1pkOgXD63yU", companies: ["Amazon", "Facebook", "Microsoft"] },
+            { id: 14, number: 14, title: "Longest Substring Without Repeating Characters", difficulty: "medium", category: "Sliding Window", file: "problem_014_longest_substring_without_repeating_characters.html", leetcode: "https://leetcode.com/problems/longest-substring-without-repeating-characters/", video: "https://www.youtube.com/watch?v=wiGpQwVHdE0", companies: ["Amazon", "Adobe", "Bloomberg"] },
+            { id: 15, number: 15, title: "Longest Repeating Character Replacement", difficulty: "medium", category: "Sliding Window", file: "problem_015_longest_repeating_character_replacement.html", leetcode: "https://leetcode.com/problems/longest-repeating-character-replacement/", video: "https://www.youtube.com/watch?v=gqXU1UyA8pk", companies: ["Amazon", "Microsoft"] },
+            { id: 16, number: 16, title: "Permutation in String", difficulty: "medium", category: "Sliding Window", file: "problem_016_permutation_in_string.html", leetcode: "https://leetcode.com/problems/permutation-in-string/", video: "https://www.youtube.com/watch?v=UbyhOgBN834", companies: ["Microsoft", "Facebook"] },
+            { id: 17, number: 17, title: "Minimum Window Substring", difficulty: "hard", category: "Sliding Window", file: "problem_017_minimum_window_substring.html", leetcode: "https://leetcode.com/problems/minimum-window-substring/", video: "https://www.youtube.com/watch?v=jSto0O4AJbM", companies: ["Facebook", "Amazon", "LinkedIn"] },
+            { id: 18, number: 18, title: "Sliding Window Maximum", difficulty: "hard", category: "Sliding Window", file: "problem_018_sliding_window_maximum.html", leetcode: "https://leetcode.com/problems/sliding-window-maximum/", video: "https://www.youtube.com/watch?v=DfljaUwZsOk", companies: ["Amazon", "Google", "Zenefits"] },
+            
+            // Stack (7 problems)
+            { id: 19, number: 19, title: "Valid Parentheses", difficulty: "easy", category: "Stack", file: "problem_019_valid_parentheses.html", leetcode: "https://leetcode.com/problems/valid-parentheses/", video: "https://www.youtube.com/watch?v=WTzjTskDFMg", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 20, number: 20, title: "Min Stack", difficulty: "medium", category: "Stack", file: "problem_020_min_stack.html", leetcode: "https://leetcode.com/problems/min-stack/", video: "https://www.youtube.com/watch?v=qkLl7nAwDPo", companies: ["Amazon", "Bloomberg", "Snapchat"] },
+            { id: 21, number: 21, title: "Evaluate Reverse Polish Notation", difficulty: "medium", category: "Stack", file: "problem_021_evaluate_reverse_polish_notation.html", leetcode: "https://leetcode.com/problems/evaluate-reverse-polish-notation/", video: "https://www.youtube.com/watch?v=iu0082c4HDE", companies: ["LinkedIn", "Amazon"] },
+            { id: 22, number: 22, title: "Generate Parentheses", difficulty: "medium", category: "Stack", file: "problem_022_generate_parentheses.html", leetcode: "https://leetcode.com/problems/generate-parentheses/", video: "https://www.youtube.com/watch?v=s9fokUqJ76A", companies: ["Amazon", "Google", "Zenefits"] },
+            { id: 23, number: 23, title: "Daily Temperatures", difficulty: "medium", category: "Stack", file: "problem_023_daily_temperatures.html", leetcode: "https://leetcode.com/problems/daily-temperatures/", video: "https://www.youtube.com/watch?v=cTBiBSnjO3c", companies: ["Amazon", "Google"] },
+            { id: 24, number: 24, title: "Car Fleet", difficulty: "medium", category: "Stack", file: "problem_024_car_fleet.html", leetcode: "https://leetcode.com/problems/car-fleet/", video: "https://www.youtube.com/watch?v=Pr6T-3yB9RM", companies: ["Amazon"] },
+            { id: 25, number: 25, title: "Largest Rectangle in Histogram", difficulty: "hard", category: "Stack", file: "problem_025_largest_rectangle_in_histogram.html", leetcode: "https://leetcode.com/problems/largest-rectangle-in-histogram/", video: "https://www.youtube.com/watch?v=zx5Sw9130L0", companies: ["Amazon", "Google", "Facebook"] },
+            
+            // Binary Search (7 problems)
+            { id: 26, number: 26, title: "Binary Search", difficulty: "easy", category: "Binary Search", file: "problem_026_binary_search.html", leetcode: "https://leetcode.com/problems/binary-search/", video: "https://www.youtube.com/watch?v=s4DPM8ct1pI", companies: ["Amazon", "Facebook", "LinkedIn"] },
+            { id: 27, number: 27, title: "Search a 2D Matrix", difficulty: "medium", category: "Binary Search", file: "problem_027_search_a_2d_matrix.html", leetcode: "https://leetcode.com/problems/search-a-2d-matrix/", video: "https://www.youtube.com/watch?v=Ber2pi2C0j0", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 28, number: 28, title: "Koko Eating Bananas", difficulty: "medium", category: "Binary Search", file: "problem_028_koko_eating_bananas.html", leetcode: "https://leetcode.com/problems/koko-eating-bananas/", video: "https://www.youtube.com/watch?v=U2SozAs9RzA", companies: ["Facebook", "Google"] },
+            { id: 29, number: 29, title: "Find Minimum in Rotated Sorted Array", difficulty: "medium", category: "Binary Search", file: "problem_029_find_minimum_in_rotated_sorted_array.html", leetcode: "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/", video: "https://www.youtube.com/watch?v=nIVW4P8b1VA", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 30, number: 30, title: "Search in Rotated Sorted Array", difficulty: "medium", category: "Binary Search", file: "problem_030_search_in_rotated_sorted_array.html", leetcode: "https://leetcode.com/problems/search-in-rotated-sorted-array/", video: "https://www.youtube.com/watch?v=U8XENwh8Oy8", companies: ["Facebook", "Amazon", "Microsoft"] },
+            { id: 31, number: 31, title: "Time Based Key-Value Store", difficulty: "medium", category: "Binary Search", file: "problem_031_time_based_key_value_store.html", leetcode: "https://leetcode.com/problems/time-based-key-value-store/", video: "https://www.youtube.com/watch?v=fu2cD_6E8Hw", companies: ["Amazon", "Google", "Uber"] },
+            { id: 32, number: 32, title: "Median of Two Sorted Arrays", difficulty: "hard", category: "Binary Search", file: "problem_032_median_of_two_sorted_arrays.html", leetcode: "https://leetcode.com/problems/median-of-two-sorted-arrays/", video: "https://www.youtube.com/watch?v=q6IEA26hvXc", companies: ["Google", "Amazon", "Microsoft"] },
+            
+            // For now, let's add 50 problems and test if it works
+            { id: 33, number: 33, title: "Reverse Linked List", difficulty: "easy", category: "Linked List", file: "problem_033_reverse_linked_list.html", leetcode: "https://leetcode.com/problems/reverse-linked-list/", video: "https://www.youtube.com/watch?v=G0_I-ZF0S38", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 34, number: 34, title: "Merge Two Sorted Lists", difficulty: "easy", category: "Linked List", file: "problem_034_merge_two_sorted_lists.html", leetcode: "https://leetcode.com/problems/merge-two-sorted-lists/", video: "https://www.youtube.com/watch?v=XIdigk956u0", companies: ["Amazon", "Microsoft", "Apple"] },
+            { id: 35, number: 35, title: "Reorder List", difficulty: "medium", category: "Linked List", file: "problem_035_reorder_list.html", leetcode: "https://leetcode.com/problems/reorder-list/", video: "https://www.youtube.com/watch?v=S5bfdUTrKLM", companies: ["Facebook", "Amazon", "Microsoft"] },
+            { id: 36, number: 36, title: "Remove Nth Node From End of List", difficulty: "medium", category: "Linked List", file: "problem_036_remove_nth_node_from_end_of_list.html", leetcode: "https://leetcode.com/problems/remove-nth-node-from-end-of-list/", video: "https://www.youtube.com/watch?v=XVuQxVej6y8", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 37, number: 37, title: "Copy List with Random Pointer", difficulty: "medium", category: "Linked List", file: "problem_037_copy_list_with_random_pointer.html", leetcode: "https://leetcode.com/problems/copy-list-with-random-pointer/", video: "https://www.youtube.com/watch?v=5Y2EiZST97Y", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 38, number: 38, title: "Add Two Numbers", difficulty: "medium", category: "Linked List", file: "problem_038_add_two_numbers.html", leetcode: "https://leetcode.com/problems/add-two-numbers/", video: "https://www.youtube.com/watch?v=wgFPrzTjm7s", companies: ["Amazon", "Microsoft", "Bloomberg"] },
+            { id: 39, number: 39, title: "Linked List Cycle", difficulty: "easy", category: "Linked List", file: "problem_039_linked_list_cycle.html", leetcode: "https://leetcode.com/problems/linked-list-cycle/", video: "https://www.youtube.com/watch?v=gBTe7lFR3vc", companies: ["Amazon", "Microsoft", "Yahoo"] },
+            { id: 40, number: 40, title: "Find the Duplicate Number", difficulty: "medium", category: "Linked List", file: "problem_040_find_the_duplicate_number.html", leetcode: "https://leetcode.com/problems/find-the-duplicate-number/", video: "https://www.youtube.com/watch?v=wjYnzkAhcNk", companies: ["Amazon", "Microsoft", "Bloomberg"] },
+            { id: 41, number: 41, title: "LRU Cache", difficulty: "medium", category: "Linked List", file: "problem_041_lru_cache.html", leetcode: "https://leetcode.com/problems/lru-cache/", video: "https://www.youtube.com/watch?v=7ABFKPK2hD4", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 42, number: 42, title: "Merge k Sorted Lists", difficulty: "hard", category: "Linked List", file: "problem_042_merge_k_sorted_lists.html", leetcode: "https://leetcode.com/problems/merge-k-sorted-lists/", video: "https://www.youtube.com/watch?v=q5a5OiGbT6Q", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 43, number: 43, title: "Reverse Nodes in k-Group", difficulty: "hard", category: "Linked List", file: "problem_043_reverse_nodes_in_k_group.html", leetcode: "https://leetcode.com/problems/reverse-nodes-in-k-group/", video: "https://www.youtube.com/watch?v=1UOPsfP85V4", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 44, number: 44, title: "Invert Binary Tree", difficulty: "easy", category: "Trees", file: "problem_044_invert_binary_tree.html", leetcode: "https://leetcode.com/problems/invert-binary-tree/", video: "https://www.youtube.com/watch?v=OnSn2XEQ4MY", companies: ["Google", "Amazon", "Facebook"] },
+            { id: 45, number: 45, title: "Maximum Depth of Binary Tree", difficulty: "easy", category: "Trees", file: "problem_045_maximum_depth_of_binary_tree.html", leetcode: "https://leetcode.com/problems/maximum-depth-of-binary-tree/", video: "https://www.youtube.com/watch?v=hTM3phVI6YQ", companies: ["LinkedIn", "Amazon", "Apple"] },
+            { id: 46, number: 46, title: "Diameter of Binary Tree", difficulty: "easy", category: "Trees", file: "problem_046_diameter_of_binary_tree.html", leetcode: "https://leetcode.com/problems/diameter-of-binary-tree/", video: "https://www.youtube.com/watch?v=bkxqA8Rfv04", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 47, number: 47, title: "Balanced Binary Tree", difficulty: "easy", category: "Trees", file: "problem_047_balanced_binary_tree.html", leetcode: "https://leetcode.com/problems/balanced-binary-tree/", video: "https://www.youtube.com/watch?v=QfJsau0ItOY", companies: ["Amazon", "Bloomberg"] },
+            { id: 48, number: 48, title: "Same Tree", difficulty: "easy", category: "Trees", file: "problem_048_same_tree.html", leetcode: "https://leetcode.com/problems/same-tree/", video: "https://www.youtube.com/watch?v=vRbbcKXCxOw", companies: ["Bloomberg", "Amazon"] },
+            { id: 49, number: 49, title: "Subtree of Another Tree", difficulty: "easy", category: "Trees", file: "problem_049_subtree_of_another_tree.html", leetcode: "https://leetcode.com/problems/subtree-of-another-tree/", video: "https://www.youtube.com/watch?v=E36O5SWp-LE", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 50, number: 50, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "medium", category: "Trees", file: "problem_050_lowest_common_ancestor_of_a_binary_search_tree.html", leetcode: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/", video: "https://www.youtube.com/watch?v=gs2LMfuOR9k", companies: ["Amazon", "Microsoft", "Facebook"] },
+            // Trees (continued)
+            { id: 51, number: 51, title: "Binary Tree Level Order Traversal", difficulty: "medium", category: "Trees", file: "problem_051_binary_tree_level_order_traversal.html", leetcode: "https://leetcode.com/problems/binary-tree-level-order-traversal/", video: "https://www.youtube.com/watch?v=6ZnyEApgFYg", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 52, number: 52, title: "Binary Tree Right Side View", difficulty: "medium", category: "Trees", file: "problem_052_binary_tree_right_side_view.html", leetcode: "https://leetcode.com/problems/binary-tree-right-side-view/", video: "https://www.youtube.com/watch?v=d4zLyciuuXs", companies: ["Amazon", "Facebook", "Bloomberg"] },
+            { id: 53, number: 53, title: "Count Good Nodes in Binary Tree", difficulty: "medium", category: "Trees", file: "problem_053_count_good_nodes_in_binary_tree.html", leetcode: "https://leetcode.com/problems/count-good-nodes-in-binary-tree/", video: "https://www.youtube.com/watch?v=7cp5imvDzl4", companies: ["Amazon", "Microsoft"] },
+            { id: 54, number: 54, title: "Validate Binary Search Tree", difficulty: "medium", category: "Trees", file: "problem_054_validate_binary_search_tree.html", leetcode: "https://leetcode.com/problems/validate-binary-search-tree/", video: "https://www.youtube.com/watch?v=s6ATEkipzow", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 55, number: 55, title: "Kth Smallest Element in a BST", difficulty: "medium", category: "Trees", file: "problem_055_kth_smallest_element_in_a_bst.html", leetcode: "https://leetcode.com/problems/kth-smallest-element-in-a-bst/", video: "https://www.youtube.com/watch?v=5LUXSvjmGCw", companies: ["Amazon", "Bloomberg", "Uber"] },
+            { id: 56, number: 56, title: "Construct Binary Tree from Preorder and Inorder Traversal", difficulty: "medium", category: "Trees", file: "problem_056_construct_binary_tree_from_preorder_and_inorder_traversal.html", leetcode: "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/", video: "https://www.youtube.com/watch?v=ihj4IQGZ2zc", companies: ["Amazon", "Microsoft", "Bloomberg"] },
+            { id: 57, number: 57, title: "Binary Tree Maximum Path Sum", difficulty: "hard", category: "Trees", file: "problem_057_binary_tree_maximum_path_sum.html", leetcode: "https://leetcode.com/problems/binary-tree-maximum-path-sum/", video: "https://www.youtube.com/watch?v=Hr5cWUld4vU", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 58, number: 58, title: "Serialize and Deserialize Binary Tree", difficulty: "hard", category: "Trees", file: "problem_058_serialize_and_deserialize_binary_tree.html", leetcode: "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/", video: "https://www.youtube.com/watch?v=u4JAi2JJhI8", companies: ["Amazon", "Microsoft", "Facebook"] },
+            
+            // Tries (3 problems)
+            { id: 59, number: 59, title: "Implement Trie (Prefix Tree)", difficulty: "medium", category: "Tries", file: "problem_059_implement_trie_prefix_tree.html", leetcode: "https://leetcode.com/problems/implement-trie-prefix-tree/", video: "https://www.youtube.com/watch?v=oobqoCJlHA0", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 60, number: 60, title: "Design Add and Search Words Data Structure", difficulty: "medium", category: "Tries", file: "problem_060_design_add_and_search_words_data_structure.html", leetcode: "https://leetcode.com/problems/design-add-and-search-words-data-structure/", video: "https://www.youtube.com/watch?v=BTf05gs_8iU", companies: ["Amazon", "Facebook"] },
+            { id: 61, number: 61, title: "Word Search II", difficulty: "hard", category: "Tries", file: "problem_061_word_search_ii.html", leetcode: "https://leetcode.com/problems/word-search-ii/", video: "https://www.youtube.com/watch?v=asbcE9mZz_U", companies: ["Amazon", "Microsoft", "Google"] },
+            
+            // Heap / Priority Queue (3 problems)
+            { id: 62, number: 62, title: "Kth Largest Element in a Stream", difficulty: "easy", category: "Heap / Priority Queue", file: "problem_062_kth_largest_element_in_a_stream.html", leetcode: "https://leetcode.com/problems/kth-largest-element-in-a-stream/", video: "https://www.youtube.com/watch?v=hOjcdrqMoQ8", companies: ["Amazon", "Facebook"] },
+            { id: 63, number: 63, title: "Last Stone Weight", difficulty: "easy", category: "Heap / Priority Queue", file: "problem_063_last_stone_weight.html", leetcode: "https://leetcode.com/problems/last-stone-weight/", video: "https://www.youtube.com/watch?v=B-QCq79-Vfw", companies: ["Amazon"] },
+            { id: 64, number: 64, title: "Find Median from Data Stream", difficulty: "hard", category: "Heap / Priority Queue", file: "problem_064_find_median_from_data_stream.html", leetcode: "https://leetcode.com/problems/find-median-from-data-stream/", video: "https://www.youtube.com/watch?v=itmhHWaHupI", companies: ["Amazon", "Google", "Facebook"] },
+            
+            // Backtracking (9 problems)
+            { id: 65, number: 65, title: "Subsets", difficulty: "medium", category: "Backtracking", file: "problem_065_subsets.html", leetcode: "https://leetcode.com/problems/subsets/", video: "https://www.youtube.com/watch?v=REOH22Xwdkk", companies: ["Amazon", "Facebook", "Bloomberg"] },
+            { id: 66, number: 66, title: "Combination Sum", difficulty: "medium", category: "Backtracking", file: "problem_066_combination_sum.html", leetcode: "https://leetcode.com/problems/combination-sum/", video: "https://www.youtube.com/watch?v=GBKI9VSKdGg", companies: ["Amazon", "Snapchat", "Uber"] },
+            { id: 67, number: 67, title: "Permutations", difficulty: "medium", category: "Backtracking", file: "problem_067_permutations.html", leetcode: "https://leetcode.com/problems/permutations/", video: "https://www.youtube.com/watch?v=s7AvT7cGdSo", companies: ["Amazon", "Microsoft", "LinkedIn"] },
+            { id: 68, number: 68, title: "Subsets II", difficulty: "medium", category: "Backtracking", file: "problem_068_subsets_ii.html", leetcode: "https://leetcode.com/problems/subsets-ii/", video: "https://www.youtube.com/watch?v=Vn2v6ajA7U0", companies: ["Amazon", "Facebook"] },
+            { id: 69, number: 69, title: "Combination Sum II", difficulty: "medium", category: "Backtracking", file: "problem_069_combination_sum_ii.html", leetcode: "https://leetcode.com/problems/combination-sum-ii/", video: "https://www.youtube.com/watch?v=rSA3t6BDDwg", companies: ["Amazon", "Snapchat"] },
+            { id: 70, number: 70, title: "Word Search", difficulty: "medium", category: "Backtracking", file: "problem_070_word_search.html", leetcode: "https://leetcode.com/problems/word-search/", video: "https://www.youtube.com/watch?v=pfiQ_PS1g8E", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 71, number: 71, title: "Palindrome Partitioning", difficulty: "medium", category: "Backtracking", file: "problem_071_palindrome_partitioning.html", leetcode: "https://leetcode.com/problems/palindrome-partitioning/", video: "https://www.youtube.com/watch?v=3jvWodd7ht0", companies: ["Amazon", "Bloomberg"] },
+            { id: 72, number: 72, title: "Letter Combinations of a Phone Number", difficulty: "medium", category: "Backtracking", file: "problem_072_letter_combinations_of_a_phone_number.html", leetcode: "https://leetcode.com/problems/letter-combinations-of-a-phone-number/", video: "https://www.youtube.com/watch?v=0snEunUacZY", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 73, number: 73, title: "N-Queens", difficulty: "hard", category: "Backtracking", file: "problem_073_n_queens.html", leetcode: "https://leetcode.com/problems/n-queens/", video: "https://www.youtube.com/watch?v=Ph95IHmRp5M", companies: ["Amazon", "Microsoft"] },
+            
+            // Graphs (first 2 problems)
+            { id: 74, number: 74, title: "Number of Islands", difficulty: "medium", category: "Graphs", file: "problem_074_number_of_islands.html", leetcode: "https://leetcode.com/problems/number-of-islands/", video: "https://www.youtube.com/watch?v=pV2kpPD66nE", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 75, number: 75, title: "Clone Graph", difficulty: "medium", category: "Graphs", file: "problem_075_clone_graph.html", leetcode: "https://leetcode.com/problems/clone-graph/", video: "https://www.youtube.com/watch?v=mQeF6bN8hMk", companies: ["Facebook", "Amazon", "Google"] },
+            // Graphs (continued)
+            { id: 76, number: 76, title: "Max Area of Island", difficulty: "medium", category: "Graphs", file: "problem_076_max_area_of_island.html", leetcode: "https://leetcode.com/problems/max-area-of-island/", video: "https://www.youtube.com/watch?v=iJGr1OtmH0c", companies: ["Amazon", "Google", "Microsoft"] },
+            { id: 77, number: 77, title: "Pacific Atlantic Water Flow", difficulty: "medium", category: "Graphs", file: "problem_077_pacific_atlantic_water_flow.html", leetcode: "https://leetcode.com/problems/pacific-atlantic-water-flow/", video: "https://www.youtube.com/watch?v=s-VkcjHqkGI", companies: ["Google", "Amazon", "Facebook"] },
+            { id: 78, number: 78, title: "Surrounded Regions", difficulty: "medium", category: "Graphs", file: "problem_078_surrounded_regions.html", leetcode: "https://leetcode.com/problems/surrounded-regions/", video: "https://www.youtube.com/watch?v=9ezNcRh3yko", companies: ["Facebook", "Amazon", "Bloomberg"] },
+            { id: 79, number: 79, title: "Rotting Oranges", difficulty: "medium", category: "Graphs", file: "problem_079_rotting_oranges.html", leetcode: "https://leetcode.com/problems/rotting-oranges/", video: "https://www.youtube.com/watch?v=y704fEOx0s0", companies: ["Amazon", "Microsoft", "Uber"] },
+            { id: 80, number: 80, title: "Walls and Gates", difficulty: "medium", category: "Graphs", file: "problem_080_walls_and_gates.html", leetcode: "https://leetcode.com/problems/walls-and-gates/", video: "https://www.youtube.com/watch?v=e69C6xhiSQE", companies: ["Facebook", "Google", "Amazon"] },
+            { id: 81, number: 81, title: "Course Schedule", difficulty: "medium", category: "Graphs", file: "problem_081_course_schedule.html", leetcode: "https://leetcode.com/problems/course-schedule/", video: "https://www.youtube.com/watch?v=EgI5nU9etnU", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 82, number: 82, title: "Course Schedule II", difficulty: "medium", category: "Graphs", file: "problem_082_course_schedule_ii.html", leetcode: "https://leetcode.com/problems/course-schedule-ii/", video: "https://www.youtube.com/watch?v=Akt3glAwyfY", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 83, number: 83, title: "Redundant Connection", difficulty: "medium", category: "Graphs", file: "problem_083_redundant_connection.html", leetcode: "https://leetcode.com/problems/redundant-connection/", video: "https://www.youtube.com/watch?v=FXWRE67PLL0", companies: ["Amazon", "Google"] },
+            { id: 84, number: 84, title: "Number of Connected Components in an Undirected Graph", difficulty: "medium", category: "Graphs", file: "problem_084_number_of_connected_components_in_an_undirected_graph.html", leetcode: "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/", video: "https://www.youtube.com/watch?v=8f1XPm4WOUc", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 85, number: 85, title: "Graph Valid Tree", difficulty: "medium", category: "Graphs", file: "problem_085_graph_valid_tree.html", leetcode: "https://leetcode.com/problems/graph-valid-tree/", video: "https://www.youtube.com/watch?v=bXsUuownnoQ", companies: ["Google", "Facebook", "Microsoft"] },
+            { id: 86, number: 86, title: "Word Ladder", difficulty: "hard", category: "Graphs", file: "problem_086_word_ladder.html", leetcode: "https://leetcode.com/problems/word-ladder/", video: "https://www.youtube.com/watch?v=h9iTnkgv05E", companies: ["Amazon", "Facebook", "Snapchat"] },
+            
+            // Advanced Graphs (6 problems)
+            { id: 87, number: 87, title: "Reconstruct Itinerary", difficulty: "hard", category: "Advanced Graphs", file: "problem_087_reconstruct_itinerary.html", leetcode: "https://leetcode.com/problems/reconstruct-itinerary/", video: "https://www.youtube.com/watch?v=ZyB_gQ8vqGA", companies: ["Amazon", "Google", "Facebook"] },
+            { id: 88, number: 88, title: "Min Cost to Connect All Points", difficulty: "medium", category: "Advanced Graphs", file: "problem_088_min_cost_to_connect_all_points.html", leetcode: "https://leetcode.com/problems/min-cost-to-connect-all-points/", video: "https://www.youtube.com/watch?v=f7JOBJIC-NA", companies: ["Amazon", "Microsoft"] },
+            { id: 89, number: 89, title: "Network Delay Time", difficulty: "medium", category: "Advanced Graphs", file: "problem_089_network_delay_time.html", leetcode: "https://leetcode.com/problems/network-delay-time/", video: "https://www.youtube.com/watch?v=EaphyqKU4PQ", companies: ["Amazon", "Google"] },
+            { id: 90, number: 90, title: "Swim in Rising Water", difficulty: "hard", category: "Advanced Graphs", file: "problem_090_swim_in_rising_water.html", leetcode: "https://leetcode.com/problems/swim-in-rising-water/", video: "https://www.youtube.com/watch?v=amvrKlMLuGY", companies: ["Google", "Amazon"] },
+            { id: 91, number: 91, title: "Alien Dictionary", difficulty: "hard", category: "Advanced Graphs", file: "problem_091_alien_dictionary.html", leetcode: "https://leetcode.com/problems/alien-dictionary/", video: "https://www.youtube.com/watch?v=6kTZYvNNyps", companies: ["Facebook", "Airbnb", "Google"] },
+            { id: 92, number: 92, title: "Cheapest Flights Within K Stops", difficulty: "medium", category: "Advanced Graphs", file: "problem_092_cheapest_flights_within_k_stops.html", leetcode: "https://leetcode.com/problems/cheapest-flights-within-k-stops/", video: "https://www.youtube.com/watch?v=5eIK3zUdYmE", companies: ["Amazon", "Google"] },
+            
+            // 1-D Dynamic Programming (first 8 problems)
+            { id: 93, number: 93, title: "Climbing Stairs", difficulty: "easy", category: "1-D Dynamic Programming", file: "problem_093_climbing_stairs.html", leetcode: "https://leetcode.com/problems/climbing-stairs/", video: "https://www.youtube.com/watch?v=Y0lT9Fck7qI", companies: ["Amazon", "Apple", "Adobe"] },
+            { id: 94, number: 94, title: "Min Cost Climbing Stairs", difficulty: "easy", category: "1-D Dynamic Programming", file: "problem_094_min_cost_climbing_stairs.html", leetcode: "https://leetcode.com/problems/min-cost-climbing-stairs/", video: "https://www.youtube.com/watch?v=ktmzAZWkEZ0", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 95, number: 95, title: "House Robber", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_095_house_robber.html", leetcode: "https://leetcode.com/problems/house-robber/", video: "https://www.youtube.com/watch?v=73r3KWiEvyk", companies: ["Amazon", "Google", "Microsoft"] },
+            { id: 96, number: 96, title: "House Robber II", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_096_house_robber_ii.html", leetcode: "https://leetcode.com/problems/house-robber-ii/", video: "https://www.youtube.com/watch?v=rWAJCfYYOvM", companies: ["Amazon", "Google", "Microsoft"] },
+            { id: 97, number: 97, title: "Longest Palindromic Substring", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_097_longest_palindromic_substring.html", leetcode: "https://leetcode.com/problems/longest-palindromic-substring/", video: "https://www.youtube.com/watch?v=XYQecbcd6_c", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 98, number: 98, title: "Palindromic Substrings", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_098_palindromic_substrings.html", leetcode: "https://leetcode.com/problems/palindromic-substrings/", video: "https://www.youtube.com/watch?v=4RACzI5-du8", companies: ["Facebook", "LinkedIn"] },
+            { id: 99, number: 99, title: "Decode Ways", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_099_decode_ways.html", leetcode: "https://leetcode.com/problems/decode-ways/", video: "https://www.youtube.com/watch?v=6aEyTjOwlJU", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 100, number: 100, title: "Coin Change", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_100_coin_change.html", leetcode: "https://leetcode.com/problems/coin-change/", video: "https://www.youtube.com/watch?v=H9bfqozjoqs", companies: ["Amazon", "Microsoft", "Google"] },
+            // 1-D Dynamic Programming (remaining 4 problems)
+            { id: 101, number: 101, title: "Maximum Product Subarray", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_101_maximum_product_subarray.html", leetcode: "https://leetcode.com/problems/maximum-product-subarray/", video: "https://www.youtube.com/watch?v=lXVy6YWFcRM", companies: ["Amazon", "LinkedIn", "Google"] },
+            { id: 102, number: 102, title: "Word Break", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_102_word_break.html", leetcode: "https://leetcode.com/problems/word-break/", video: "https://www.youtube.com/watch?v=Sx9NNgInc3A", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 103, number: 103, title: "Longest Increasing Subsequence", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_103_longest_increasing_subsequence.html", leetcode: "https://leetcode.com/problems/longest-increasing-subsequence/", video: "https://www.youtube.com/watch?v=cjWnW0hdF1Y", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 104, number: 104, title: "Partition Equal Subset Sum", difficulty: "medium", category: "1-D Dynamic Programming", file: "problem_104_partition_equal_subset_sum.html", leetcode: "https://leetcode.com/problems/partition-equal-subset-sum/", video: "https://www.youtube.com/watch?v=IsvocB5BJhw", companies: ["Amazon", "Facebook"] },
+            
+            // 2-D Dynamic Programming (11 problems)
+            { id: 105, number: 105, title: "Unique Paths", difficulty: "medium", category: "2-D Dynamic Programming", file: "problem_105_unique_paths.html", leetcode: "https://leetcode.com/problems/unique-paths/", video: "https://www.youtube.com/watch?v=IlEsdxuD4lY", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 106, number: 106, title: "Longest Common Subsequence", difficulty: "medium", category: "2-D Dynamic Programming", file: "problem_106_longest_common_subsequence.html", leetcode: "https://leetcode.com/problems/longest-common-subsequence/", video: "https://www.youtube.com/watch?v=Ua0GhsJSlWM", companies: ["Amazon", "Google", "Uber"] },
+            { id: 107, number: 107, title: "Best Time to Buy and Sell Stock with Cooldown", difficulty: "medium", category: "2-D Dynamic Programming", file: "problem_107_best_time_to_buy_and_sell_stock_with_cooldown.html", leetcode: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/", video: "https://www.youtube.com/watch?v=I7j0F7AHpb8", companies: ["Amazon", "Google"] },
+            { id: 108, number: 108, title: "Coin Change 2", difficulty: "medium", category: "2-D Dynamic Programming", file: "problem_108_coin_change_2.html", leetcode: "https://leetcode.com/problems/coin-change-2/", video: "https://www.youtube.com/watch?v=Mjy4hd2xgrs", companies: ["Amazon", "Facebook"] },
+            { id: 109, number: 109, title: "Target Sum", difficulty: "medium", category: "2-D Dynamic Programming", file: "problem_109_target_sum.html", leetcode: "https://leetcode.com/problems/target-sum/", video: "https://www.youtube.com/watch?v=g0npyaQtAQM", companies: ["Facebook", "Google"] },
+            { id: 110, number: 110, title: "Interleaving String", difficulty: "medium", category: "2-D Dynamic Programming", file: "problem_110_interleaving_string.html", leetcode: "https://leetcode.com/problems/interleaving-string/", video: "https://www.youtube.com/watch?v=3Rw3p9LrgvE", companies: ["Amazon", "Google"] },
+            { id: 111, number: 111, title: "Longest Increasing Path in a Matrix", difficulty: "hard", category: "2-D Dynamic Programming", file: "problem_111_longest_increasing_path_in_a_matrix.html", leetcode: "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/", video: "https://www.youtube.com/watch?v=wCc_nd-GiEc", companies: ["Amazon", "Google", "Facebook"] },
+            { id: 112, number: 112, title: "Distinct Subsequences", difficulty: "hard", category: "2-D Dynamic Programming", file: "problem_112_distinct_subsequences.html", leetcode: "https://leetcode.com/problems/distinct-subsequences/", video: "https://www.youtube.com/watch?v=63PcQs6rKnE", companies: ["Amazon"] },
+            { id: 113, number: 113, title: "Edit Distance", difficulty: "hard", category: "2-D Dynamic Programming", file: "problem_113_edit_distance.html", leetcode: "https://leetcode.com/problems/edit-distance/", video: "https://www.youtube.com/watch?v=XYi2-LPrwm4", companies: ["Amazon", "Google", "Facebook"] },
+            { id: 114, number: 114, title: "Burst Balloons", difficulty: "hard", category: "2-D Dynamic Programming", file: "problem_114_burst_balloons.html", leetcode: "https://leetcode.com/problems/burst-balloons/", video: "https://www.youtube.com/watch?v=VFskby7lUbw", companies: ["Amazon", "Google"] },
+            { id: 115, number: 115, title: "Regular Expression Matching", difficulty: "hard", category: "2-D Dynamic Programming", file: "problem_115_regular_expression_matching.html", leetcode: "https://leetcode.com/problems/regular-expression-matching/", video: "https://www.youtube.com/watch?v=HAA8mgxlov8", companies: ["Amazon", "Facebook", "Google"] },
+            
+            // Greedy (8 problems)
+            { id: 116, number: 116, title: "Maximum Subarray", difficulty: "medium", category: "Greedy", file: "problem_116_maximum_subarray.html", leetcode: "https://leetcode.com/problems/maximum-subarray/", video: "https://www.youtube.com/watch?v=5WZl3MMT0Eg", companies: ["Amazon", "Microsoft", "LinkedIn"] },
+            { id: 117, number: 117, title: "Jump Game", difficulty: "medium", category: "Greedy", file: "problem_117_jump_game.html", leetcode: "https://leetcode.com/problems/jump-game/", video: "https://www.youtube.com/watch?v=Yan0cv2cLy8", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 118, number: 118, title: "Jump Game II", difficulty: "medium", category: "Greedy", file: "problem_118_jump_game_ii.html", leetcode: "https://leetcode.com/problems/jump-game-ii/", video: "https://www.youtube.com/watch?v=dJ7sWiOoK7g", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 119, number: 119, title: "Gas Station", difficulty: "medium", category: "Greedy", file: "problem_119_gas_station.html", leetcode: "https://leetcode.com/problems/gas-station/", video: "https://www.youtube.com/watch?v=lJwbPZGo05A", companies: ["Amazon", "Google"] },
+            { id: 120, number: 120, title: "Hand of Straights", difficulty: "medium", category: "Greedy", file: "problem_120_hand_of_straights.html", leetcode: "https://leetcode.com/problems/hand-of-straights/", video: "https://www.youtube.com/watch?v=amnrMCVd2YI", companies: ["Google"] },
+            { id: 121, number: 121, title: "Merge Triplets to Form Target Triplet", difficulty: "medium", category: "Greedy", file: "problem_121_merge_triplets_to_form_target_triplet.html", leetcode: "https://leetcode.com/problems/merge-triplets-to-form-target-triplet/", video: "https://www.youtube.com/watch?v=kShkQLQZ9K4", companies: ["Amazon"] },
+            { id: 122, number: 122, title: "Partition Labels", difficulty: "medium", category: "Greedy", file: "problem_122_partition_labels.html", leetcode: "https://leetcode.com/problems/partition-labels/", video: "https://www.youtube.com/watch?v=B7m8UmZE-vw", companies: ["Amazon", "Facebook"] },
+            { id: 123, number: 123, title: "Valid Parenthesis String", difficulty: "medium", category: "Greedy", file: "problem_123_valid_parenthesis_string.html", leetcode: "https://leetcode.com/problems/valid-parenthesis-string/", video: "https://www.youtube.com/watch?v=QhPdNS143Qg", companies: ["Amazon", "Facebook"] },
+            
+            // Intervals (first 2 problems)
+            { id: 124, number: 124, title: "Insert Interval", difficulty: "medium", category: "Intervals", file: "problem_124_insert_interval.html", leetcode: "https://leetcode.com/problems/insert-interval/", video: "https://www.youtube.com/watch?v=A8NUOmlwOlM", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 125, number: 125, title: "Merge Intervals", difficulty: "medium", category: "Intervals", file: "problem_125_merge_intervals.html", leetcode: "https://leetcode.com/problems/merge-intervals/", video: "https://www.youtube.com/watch?v=44H3cEC2fFM", companies: ["Amazon", "Facebook", "Google"] },
+            // Intervals (remaining 4 problems)
+            { id: 126, number: 126, title: "Non-overlapping Intervals", difficulty: "medium", category: "Intervals", file: "problem_126_non_overlapping_intervals.html", leetcode: "https://leetcode.com/problems/non-overlapping-intervals/", video: "https://www.youtube.com/watch?v=nONCGxWoUfM", companies: ["Amazon", "Facebook"] },
+            { id: 127, number: 127, title: "Meeting Rooms", difficulty: "easy", category: "Intervals", file: "problem_127_meeting_rooms.html", leetcode: "https://leetcode.com/problems/meeting-rooms/", video: "https://www.youtube.com/watch?v=PaJxqZVPhbg", companies: ["Facebook", "Amazon"] },
+            { id: 128, number: 128, title: "Meeting Rooms II", difficulty: "medium", category: "Intervals", file: "problem_128_meeting_rooms_ii.html", leetcode: "https://leetcode.com/problems/meeting-rooms-ii/", video: "https://www.youtube.com/watch?v=FdzJmTCVyJU", companies: ["Facebook", "Amazon", "Google"] },
+            { id: 129, number: 129, title: "Minimum Interval to Include Each Query", difficulty: "hard", category: "Intervals", file: "problem_129_minimum_interval_to_include_each_query.html", leetcode: "https://leetcode.com/problems/minimum-interval-to-include-each-query/", video: "https://www.youtube.com/watch?v=5hQ5WWW5awQ", companies: ["Google"] },
+            
+            // Math & Geometry (8 problems)
+            { id: 130, number: 130, title: "Rotate Image", difficulty: "medium", category: "Math & Geometry", file: "problem_130_rotate_image.html", leetcode: "https://leetcode.com/problems/rotate-image/", video: "https://www.youtube.com/watch?v=fMSJSS7eO1w", companies: ["Amazon", "Microsoft", "Apple"] },
+            { id: 131, number: 131, title: "Spiral Matrix", difficulty: "medium", category: "Math & Geometry", file: "problem_131_spiral_matrix.html", leetcode: "https://leetcode.com/problems/spiral-matrix/", video: "https://www.youtube.com/watch?v=BJnMZNwUk1M", companies: ["Amazon", "Microsoft", "Google"] },
+            { id: 132, number: 132, title: "Set Matrix Zeroes", difficulty: "medium", category: "Math & Geometry", file: "problem_132_set_matrix_zeroes.html", leetcode: "https://leetcode.com/problems/set-matrix-zeroes/", video: "https://www.youtube.com/watch?v=T41rL0L3Pnw", companies: ["Amazon", "Microsoft", "Facebook"] },
+            { id: 133, number: 133, title: "Happy Number", difficulty: "easy", category: "Math & Geometry", file: "problem_133_happy_number.html", leetcode: "https://leetcode.com/problems/happy-number/", video: "https://www.youtube.com/watch?v=ljz85bxOYJ0", companies: ["Amazon", "Google", "Uber"] },
+            { id: 134, number: 134, title: "Plus One", difficulty: "easy", category: "Math & Geometry", file: "problem_134_plus_one.html", leetcode: "https://leetcode.com/problems/plus-one/", video: "https://www.youtube.com/watch?v=jIaA8boiG1s", companies: ["Google", "Amazon"] },
+            { id: 135, number: 135, title: "Pow(x, n)", difficulty: "medium", category: "Math & Geometry", file: "problem_135_pow_x_n.html", leetcode: "https://leetcode.com/problems/powx-n/", video: "https://www.youtube.com/watch?v=g9YQyYi4IQQ", companies: ["Amazon", "Facebook", "LinkedIn"] },
+            { id: 136, number: 136, title: "Multiply Strings", difficulty: "medium", category: "Math & Geometry", file: "problem_136_multiply_strings.html", leetcode: "https://leetcode.com/problems/multiply-strings/", video: "https://www.youtube.com/watch?v=1vZswirL8Y8", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 137, number: 137, title: "Detect Squares", difficulty: "medium", category: "Math & Geometry", file: "problem_137_detect_squares.html", leetcode: "https://leetcode.com/problems/detect-squares/", video: "https://www.youtube.com/watch?v=bahebearrDc", companies: ["Amazon"] },
+            
+            // Bit Manipulation (13 problems)
+            { id: 138, number: 138, title: "Single Number", difficulty: "easy", category: "Bit Manipulation", file: "problem_138_single_number.html", leetcode: "https://leetcode.com/problems/single-number/", video: "https://www.youtube.com/watch?v=qMPX1AOa83k", companies: ["Amazon", "Airbnb", "Palantir"] },
+            { id: 139, number: 139, title: "Number of 1 Bits", difficulty: "easy", category: "Bit Manipulation", file: "problem_139_number_of_1_bits.html", leetcode: "https://leetcode.com/problems/number-of-1-bits/", video: "https://www.youtube.com/watch?v=5Km3utBqeZE", companies: ["Amazon", "Apple", "Microsoft"] },
+            { id: 140, number: 140, title: "Counting Bits", difficulty: "easy", category: "Bit Manipulation", file: "problem_140_counting_bits.html", leetcode: "https://leetcode.com/problems/counting-bits/", video: "https://www.youtube.com/watch?v=RyBM56RIWrM", companies: ["Amazon", "Facebook"] },
+            { id: 141, number: 141, title: "Reverse Bits", difficulty: "easy", category: "Bit Manipulation", file: "problem_141_reverse_bits.html", leetcode: "https://leetcode.com/problems/reverse-bits/", video: "https://www.youtube.com/watch?v=UcoN6UjAI64", companies: ["Amazon", "Apple", "Airbnb"] },
+            { id: 142, number: 142, title: "Missing Number", difficulty: "easy", category: "Bit Manipulation", file: "problem_142_missing_number.html", leetcode: "https://leetcode.com/problems/missing-number/", video: "https://www.youtube.com/watch?v=WnPLSRLSANE", companies: ["Amazon", "Microsoft", "Bloomberg"] },
+            { id: 143, number: 143, title: "Sum of Two Integers", difficulty: "medium", category: "Bit Manipulation", file: "problem_143_sum_of_two_integers.html", leetcode: "https://leetcode.com/problems/sum-of-two-integers/", video: "https://www.youtube.com/watch?v=qq64FrA2UXQ", companies: ["Amazon", "Apple"] },
+            { id: 144, number: 144, title: "Reverse Integer", difficulty: "medium", category: "Bit Manipulation", file: "problem_144_reverse_integer.html", leetcode: "https://leetcode.com/problems/reverse-integer/", video: "https://www.youtube.com/watch?v=HAgLH58IgJQ", companies: ["Amazon", "Apple", "Bloomberg"] },
+            { id: 145, number: 145, title: "Bus Routes", difficulty: "hard", category: "Graphs", file: "problem_145_bus_routes.html", leetcode: "https://leetcode.com/problems/bus-routes/", video: "https://www.youtube.com/watch?v=_Wf8aDDOhHM", companies: ["Amazon", "Google", "Facebook"] },
+            { id: 146, number: 146, title: "Swim in Rising Water", difficulty: "hard", category: "Advanced Graphs", file: "problem_146_swim_in_rising_water.html", leetcode: "https://leetcode.com/problems/swim-in-rising-water/", video: "https://www.youtube.com/watch?v=amvrKlMLuGY", companies: ["Google", "Amazon"] },
+            { id: 147, number: 147, title: "Median of Two Sorted Arrays II", difficulty: "hard", category: "Binary Search", file: "problem_147_median_of_two_sorted_arrays_ii.html", leetcode: "https://leetcode.com/problems/median-of-two-sorted-arrays/", video: "https://www.youtube.com/watch?v=q6IEA26hvXc", companies: ["Google", "Amazon", "Microsoft"] },
+            { id: 148, number: 148, title: "Text Justification", difficulty: "hard", category: "Math & Geometry", file: "problem_148_text_justification.html", leetcode: "https://leetcode.com/problems/text-justification/", video: "https://www.youtube.com/watch?v=TzMl4Z7pVh8", companies: ["Amazon", "LinkedIn", "Airbnb"] },
+            { id: 149, number: 149, title: "Regular Expression Matching", difficulty: "hard", category: "2-D Dynamic Programming", file: "problem_149_regular_expression_matching_ii.html", leetcode: "https://leetcode.com/problems/regular-expression-matching/", video: "https://www.youtube.com/watch?v=HAA8mgxlov8", companies: ["Amazon", "Facebook", "Google"] },
+            { id: 150, number: 150, title: "N-Queens II", difficulty: "hard", category: "Backtracking", file: "problem_150_n_queens_ii.html", leetcode: "https://leetcode.com/problems/n-queens-ii/", video: "https://www.youtube.com/watch?v=Ph95IHmRp5M", companies: ["Amazon", "Microsoft"] }
+        ];
+
+        // Generate remaining problems (6-150)
+        for (let i = 151; i <= 150; i++) {
+            const categories = ["Linked List", "Trees", "Tries", "Heap / Priority Queue", "Backtracking", "Graphs", "Advanced Graphs", "1-D Dynamic Programming", "2-D Dynamic Programming", "Greedy", "Intervals", "Math & Geometry", "Bit Manipulation"];
+            const difficulties = ["easy", "medium", "hard"];
+            const companies = [["Google", "Amazon", "Microsoft"], ["Facebook", "Apple", "Netflix"], ["LinkedIn", "Uber", "Twitter"]];
+            
+            problemsData.push({
+                id: i,
+                number: i,
+                title: `Problem ${i}`,
+                difficulty: difficulties[Math.floor(Math.random() * 3)],
+                category: categories[Math.floor(Math.random() * categories.length)],
+                file: `problem_${i.toString().padStart(3, '0')}_placeholder.html`,
+                leetcode: `https://leetcode.com/problems/problem-${i}/`,
+                video: `https://www.youtube.com/watch?v=placeholder${i}`,
+                companies: companies[Math.floor(Math.random() * 3)]
+            });
+        }
+
+        // Categories data
+        const categoriesData = {
+            "All": 150,
+            "Arrays & Hashing": 9,
+            "Two Pointers": 3,
+            "Sliding Window": 6,
+            "Stack": 7,
+            "Binary Search": 7,
+            "Linked List": 11,
+            "Trees": 15,
+            "Tries": 3,
+            "Heap / Priority Queue": 3,
+            "Backtracking": 9,
+            "Graphs": 13,
+            "Advanced Graphs": 6,
+            "1-D Dynamic Programming": 12,
+            "2-D Dynamic Programming": 11,
+            "Greedy": 8,
+            "Intervals": 6,
+            "Math & Geometry": 8,
+            "Bit Manipulation": 12
+        };
+
+        // Progress tracking
+        class ProgressTracker {
+            constructor() {
+                this.progress = JSON.parse(localStorage.getItem('neetcode-progress') || '{}');
+            }
+
+            saveProgress() {
+                localStorage.setItem('neetcode-progress', JSON.stringify(this.progress));
+            }
+
+            getProblemStatus(problemId) {
+                return this.progress[problemId] || 'incomplete';
+            }
+
+            toggleStatus(problemId, status) {
+                if (this.progress[problemId] === status) {
+                    this.progress[problemId] = 'incomplete';
+                } else {
+                    this.progress[problemId] = status;
+                }
+                this.saveProgress();
+                this.updateStats();
+                renderProblems();
+                renderCategories();
+            }
+
+            resetProgress() {
+                if (confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
+                    this.progress = {};
+                    this.saveProgress();
+                    this.updateStats();
+                    renderProblems();
+                    renderCategories();
+                }
+            }
+
+            exportProgress() {
+                const dataStr = JSON.stringify(this.progress, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'neetcode-progress.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+
+            importProgress(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedProgress = JSON.parse(e.target.result);
+                        this.progress = importedProgress;
+                        this.saveProgress();
+                        this.updateStats();
+                        renderProblems();
+                        renderCategories();
+                        alert('Progress imported successfully!');
+                    } catch (error) {
+                        alert('Error importing progress: Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            updateStats() {
+                const completed = Object.values(this.progress).filter(status => status === 'completed').length;
+                const revision = Object.values(this.progress).filter(status => status === 'revision').length;
+                const remaining = 150 - completed;
+                const percentage = Math.round((completed / 150) * 100);
+
+                document.getElementById('completed-count').textContent = completed;
+                document.getElementById('revision-count').textContent = revision;
+                document.getElementById('remaining-count').textContent = remaining;
+                document.getElementById('progress-percentage').textContent = percentage + '%';
+            }
+        }
+
+        const progressTracker = new ProgressTracker();
+
+        // Filter functionality
+        let currentFilter = 'all';
+        let currentCategory = 'All';
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProblems();
+        }
+
+        function setCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-header').forEach(header => header.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProblems();
+        }
+
+        function getFilteredProblems() {
+            return problemsData.filter(problem => {
+                const statusMatch = currentFilter === 'all' || 
+                                  problem.difficulty === currentFilter ||
+                                  progressTracker.getProblemStatus(problem.id) === currentFilter;
+                
+                const categoryMatch = currentCategory === 'All' || problem.category === currentCategory;
+                
+                return statusMatch && categoryMatch;
+            });
+        }
+
+        function renderCategories() {
+            const categoriesList = document.getElementById('categories-list');
+            categoriesList.innerHTML = '';
+
+            Object.entries(categoriesData).forEach(([category, count]) => {
+                const categoryProblems = category === 'All' ? problemsData : problemsData.filter(p => p.category === category);
+                const completed = categoryProblems.filter(p => progressTracker.getProblemStatus(p.id) === 'completed').length;
+                const total = categoryProblems.length;
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-section';
+                categoryDiv.innerHTML = `
+                    <div class="category-header ${currentCategory === category ? 'active' : ''}" onclick="setCategory('${category}')">
+                        <span>${category}</span>
+                        <span>${completed}/${total}</span>
+                    </div>
+                `;
+                categoriesList.appendChild(categoryDiv);
+            });
+        }
+
+        function renderProblems() {
+            const tbody = document.getElementById('problems-tbody');
+            const filteredProblems = getFilteredProblems();
+            
+            tbody.innerHTML = filteredProblems.map(problem => {
+                const status = progressTracker.getProblemStatus(problem.id);
+                const companyTags = problem.companies.map(company => 
+                    `<span class="company-tag">${company}</span>`
+                ).join('');
+                
+                return `
+                    <tr class="problem-row ${status === 'completed' ? 'completed' : status === 'revision' ? 'needs-revision' : ''}" 
+                        data-problem-id="${problem.id}">
+                        <td>${problem.number}</td>
+                        <td>${problem.title}</td>
+                        <td>
+                            <span class="difficulty-badge ${problem.difficulty}">${problem.difficulty.toUpperCase()}</span>
+                        </td>
+                        <td class="action-links">
+                            <a href="${problem.file}" class="action-link solve-btn">🚀 Solve</a>
+                            <a href="${problem.leetcode}" target="_blank" class="action-link leetcode-btn">LeetCode</a>
+                            <a href="${problem.video}" target="_blank" class="action-link video-btn">📺 Video</a>
+                        </td>
+                        <td>
+                            <div class="status-icons">
+                                <div class="status-icon ${status === 'completed' ? 'completed-icon' : 'incomplete-icon'}" 
+                                     onclick="progressTracker.toggleStatus(${problem.id}, 'completed')" 
+                                     title="Mark as Completed">✓</div>
+                                <div class="status-icon ${status === 'revision' ? 'revision-icon' : 'incomplete-icon'}" 
+                                     onclick="progressTracker.toggleStatus(${problem.id}, 'revision')" 
+                                     title="Needs Revision">!</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="company-tags">${companyTags}</div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (file) {
+                progressTracker.importProgress(file);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCategories();
+            renderProblems();
+            progressTracker.updateStats();
+        });
+    </script>
+</body>
+</html>

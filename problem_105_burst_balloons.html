@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 105: Burst Balloons - NeetCode 150</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; text-align: center; color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .controls { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2); flex-wrap: wrap; gap: 15px; }
+        .problem-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .difficulty-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; background: #f44336; color: white; }
+        .category-badge { background: rgba(255, 255, 255, 0.2); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .leetcode-link, .video-link { color: white; text-decoration: none; padding: 5px 10px; background: rgba(255, 255, 255, 0.2); border-radius: 6px; font-size: 12px; transition: all 0.3s ease; }
+        .video-link { background: rgba(255, 0, 0, 0.3); }
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; font-size: 14px; }
+        .btn-primary { background: #2196F3; color: white; } .btn-success { background: #4CAF50; color: white; } .btn-warning { background: #FF9800; color: white; } .btn-info { background: #17a2b8; color: white; } .btn-secondary { background: #6c757d; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .container { display: flex; height: calc(100vh - 140px); gap: 1px; }
+        .column { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); overflow: hidden; display: flex; flex-direction: column; }
+        .column.problem-column { flex: 1; } .column.editor-column { flex: 1; } .column.solution-column { flex: 1; transition: all 0.3s ease; }
+        .column.solution-column.collapsed { flex: 0; min-width: 0; opacity: 0; overflow: hidden; }
+        .column-header { background: rgba(0, 0, 0, 0.1); padding: 15px 20px; font-weight: bold; font-size: 16px; color: #333; border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .column-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .problem-statement { line-height: 1.6; color: #333; }
+        .problem-statement h3 { color: #2196F3; margin-bottom: 15px; font-size: 1.3em; }
+        .problem-statement p { margin-bottom: 15px; }
+        .example { background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .constraints { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .companies-section { background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #9c27b0; }
+        .companies-section h4 { color: #7b1fa2; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .company-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .company-tag { background: linear-gradient(135deg, #9c27b0, #673ab7); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .company-count { background: rgba(255, 255, 255, 0.3); padding: 2px 6px; border-radius: 10px; font-size: 10px; }
+        .video-section { background: linear-gradient(135deg, #ffebee, #fce4ec); padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 4px solid #e91e63; }
+        .video-section h4 { color: #c2185b; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        .video-button { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #ff1744, #d50000); color: white; padding: 12px 20px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        #editor { height: 100%; border: none; }
+        .solution-content { font-family: 'Courier New', monospace; background: #f8f9fa; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .solution-content pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .approach-section { background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3; }
+        .complexity-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #2196F3; }
+        .complexity-info h4 { color: #1976d2; margin-bottom: 10px; }
+        .navigation { background: rgba(255, 255, 255, 0.1); padding: 10px 20px; text-align: center; }
+        .nav-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; margin: 0 5px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .hint-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        .hint-overlay.show { display: flex; }
+        .hint-modal { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 20px; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative; }
+        .hint-modal h3 { font-size: 1.8em; margin-bottom: 20px; text-align: center; }
+        .hint-content { line-height: 1.6; }
+        .hint-content .key-insight { background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #fff; }
+        .hint-close { position: absolute; top: 15px; right: 20px; background: rgba(255, 255, 255, 0.2); border: none; color: white; font-size: 24px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; }
+        @media (max-width: 1200px) { .container { flex-direction: column; height: auto; } .column { min-height: 400px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Problem 105: Burst Balloons</h1>
+        <p>NeetCode 150 - Interactive Java Solution with Video & Company Data</p>
+    </div>
+    <div class="controls">
+        <div class="problem-info">
+            <span class="difficulty-badge">Hard</span>
+            <span class="category-badge">2-D Dynamic Programming</span>
+            <a href="https://leetcode.com/problems/burst-balloons/" target="_blank" class="leetcode-link">🔗 LeetCode 312</a>
+            <a href="https://www.youtube.com/watch?v=VFskby7lUbw" target="_blank" class="video-link">📺 Video Solution</a>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="runCode()">▶️ Run Code</button>
+            <button class="btn btn-info" onclick="toggleHint()">💭 Get Hint</button>
+            <button class="btn btn-success" onclick="loadSolution()">📥 Load Solution</button>
+            <button class="btn btn-warning" onclick="resetCode()">🔄 Reset</button>
+            <button class="btn btn-secondary" onclick="toggleSolution()" id="toggleBtn">👁️ View Solution</button>
+        </div>
+    </div>
+    <div class="hint-overlay" id="hintOverlay" onclick="closeHintIfClickedOutside(event)">
+        <div class="hint-modal" onclick="event.stopPropagation()">
+            <button class="hint-close" onclick="toggleHint()">×</button>
+            <div style="font-size: 3em; text-align: center; margin-bottom: 20px;">💡</div>
+            <h3>💭 Hint: Burst Balloons</h3>
+            <div class="hint-content">
+                <div class="key-insight">
+                    <p><strong>🔑 Key Insight:</strong> Think backwards! Add boundary balloons with value 1. dp[i][j] = max coins from bursting balloons between i and j. Try each k as last balloon to burst in range.</p>
+                </div>
+                <p><strong>🤔 Think about:</strong> What if you think about which balloon to burst LAST in each subrange?</p>
+                <p><strong>⚡ Time Complexity:</strong> O(n³) - three nested loops</p>
+            </div>
+            <div style="text-align: center; margin-top: 25px;">
+                <button onclick="toggleHint()" style="background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">Got it! Let me try 🚀</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="column problem-column">
+            <div class="column-header">📋 Problem Statement</div>
+            <div class="column-content">
+                <div class="problem-statement">
+                    <h3>Burst Balloons</h3>
+                    <p><strong>Problem:</strong> You are given <code>n</code> balloons, indexed from <code>0</code> to <code>n - 1</code>. Each balloon is painted with a number on it represented by an array <code>nums</code>. You are asked to burst all the balloons.</p>
+                    <p>If you burst the <code>i<sup>th</sup></code> balloon, you will get <code>nums[i - 1] * nums[i] * nums[i + 1]</code> coins. If <code>i - 1</code> or <code>i + 1</code> goes out of bounds of the array, then treat it as if there is a balloon with a <code>1</code> painted on it.</p>
+                    <p>Return <em>the maximum coins you can collect by bursting the balloons wisely</em>.</p>
+                    <div class="example">
+                        <strong>Example 1:</strong><br>
+                        Input: nums = [3,1,5,8]<br>
+                        Output: 167<br>
+                        Explanation:<br>
+                        nums = [3,1,5,8] --> [3,5,8] --> [3,8] --> [8] --> []<br>
+                        coins =  3*1*5    +   3*5*8   +  1*3*8  + 1*8*1 = 15 + 120 + 24 + 8 = 167
+                    </div>
+                    <div class="example">
+                        <strong>Example 2:</strong><br>
+                        Input: nums = [1,5]<br>
+                        Output: 10
+                    </div>
+                    <div class="constraints">
+                        <strong>Constraints:</strong><br>
+                        • n == nums.length<br>
+                        • 1 ≤ n ≤ 300<br>
+                        • 0 ≤ nums[i] ≤ 100
+                    </div>
+                    <div class="video-section">
+                        <h4>📺 Video Explanation</h4>
+                        <p>Watch NeetCode's detailed explanation:</p>
+                        <a href="https://www.youtube.com/watch?v=VFskby7lUbw" target="_blank" class="video-button">🎥 Watch Video Solution</a>
+                    </div>
+                    <div class="companies-section">
+                        <h4>🏢 Asked by Companies</h4>
+                        <div class="company-tags">
+                            <div class="company-tag">Amazon <span class="company-count">20</span></div>
+                            <div class="company-tag">Microsoft <span class="company-count">15</span></div>
+                            <div class="company-tag">Google <span class="company-count">12</span></div>
+                            <div class="company-tag">Apple <span class="company-count">10</span></div>
+                            <div class="company-tag">Facebook <span class="company-count">8</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column editor-column">
+            <div class="column-header">💻 Code Editor</div>
+            <div class="column-content" style="padding: 0;"><div id="editor"></div></div>
+        </div>
+        <div class="column solution-column collapsed" id="solutionColumn">
+            <div class="column-header">✅ Java Solution</div>
+            <div class="column-content">
+                <div class="solution-content">
+                    <div class="approach-section">
+                        <h4>💡 Approach</h4>
+                        <p>Interval DP: Think backwards - which balloon to burst LAST in each subrange. Add boundary balloons with value 1.</p>
+                    </div>
+                    <h4>🔥 Optimal Solution</h4>
+                    <pre>class Solution {
+    public int maxCoins(int[] nums) {
+        int n = nums.length;
+        
+        // Add boundary balloons with value 1
+        int[] balloons = new int[n + 2];
+        balloons[0] = 1;
+        balloons[n + 1] = 1;
+        for (int i = 0; i &lt; n; i++) {
+            balloons[i + 1] = nums[i];
+        }
+        
+        // dp[i][j] = max coins from bursting balloons between i and j (exclusive)
+        int[][] dp = new int[n + 2][n + 2];
+        
+        // Length of the interval
+        for (int len = 2; len &lt;= n + 1; len++) {
+            // Start of the interval
+            for (int i = 0; i &lt;= n + 1 - len; i++) {
+                int j = i + len;
+                
+                // Try each balloon k as the last one to burst in range (i, j)
+                for (int k = i + 1; k &lt; j; k++) {
+                    // Coins from bursting k last = balloons[i] * balloons[k] * balloons[j]
+                    // Plus coins from left and right subproblems
+                    int coins = balloons[i] * balloons[k] * balloons[j] + dp[i][k] + dp[k][j];
+                    dp[i][j] = Math.max(dp[i][j], coins);
+                }
+            }
+        }
+        
+        return dp[0][n + 1];
+    }
+}</pre>
+                    <div class="complexity-info">
+                        <h4>⚡ Complexity Analysis</h4>
+                        <p><strong>Time:</strong> O(n³) - three nested loops for interval DP</p>
+                        <p><strong>Space:</strong> O(n²) - 2D DP table</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navigation">
+        <a href="neetcode_150_index.html" class="nav-btn">🏠 Home</a>
+        <a href="problem_104_edit_distance.html" class="nav-btn">← Previous: Edit Distance</a>
+        <span class="nav-btn" style="background: rgba(255,255,255,0.1);">Problem 105 of 150</span>
+        <a href="problem_106_regular_expression_matching.html" class="nav-btn">Next: Regular Expression Matching →</a>
+    </div>
+    <script>
+        let editor, solutionVisible = false, hintVisible = false;
+        const problemTemplate = `class Solution {\n    public int maxCoins(int[] nums) {\n        // Write your solution here\n        \n    }\n}`;
+        const problemSolution = `class Solution {\n    public int maxCoins(int[] nums) {\n        int n = nums.length;\n        \n        int[] balloons = new int[n + 2];\n        balloons[0] = 1;\n        balloons[n + 1] = 1;\n        for (int i = 0; i < n; i++) {\n            balloons[i + 1] = nums[i];\n        }\n        \n        int[][] dp = new int[n + 2][n + 2];\n        \n        for (int len = 2; len <= n + 1; len++) {\n            for (int i = 0; i <= n + 1 - len; i++) {\n                int j = i + len;\n                \n                for (int k = i + 1; k < j; k++) {\n                    int coins = balloons[i] * balloons[k] * balloons[j] + dp[i][k] + dp[k][j];\n                    dp[i][j] = Math.max(dp[i][j], coins);\n                }\n            }\n        }\n        \n        return dp[0][n + 1];\n    }\n}`;
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: problemTemplate, language: 'java', theme: 'vs-dark', fontSize: 14, minimap: { enabled: false }, automaticLayout: true, wordWrap: 'on'
+            });
+        });
+        function loadSolution() { if (editor) editor.setValue(problemSolution); }
+        function resetCode() { if (editor) editor.setValue(problemTemplate); }
+        function toggleHint() { const overlay = document.getElementById('hintOverlay'); hintVisible = !hintVisible; overlay.classList.toggle('show', hintVisible); }
+        function closeHintIfClickedOutside(event) { if (event.target === document.getElementById('hintOverlay')) toggleHint(); }
+        function runCode() { alert('🚀 Code execution simulation!'); }
+        function toggleSolution() { const col = document.getElementById('solutionColumn'), btn = document.getElementById('toggleBtn'); solutionVisible = !solutionVisible; col.classList.toggle('collapsed', !solutionVisible); btn.textContent = solutionVisible ? '🙈 Hide Solution' : '👁️ View Solution'; }
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && hintVisible) toggleHint(); });
+    </script>
+</body>
+</html>
